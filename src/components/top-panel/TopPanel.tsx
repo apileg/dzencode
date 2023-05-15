@@ -1,9 +1,11 @@
 import React, { useEffect, useState, memo, useCallback } from "react"
+import { io, Socket } from "socket.io-client"
 
 const TopPanel = () => {
     return (
         <div className="flex justify-around items-center shadow-md w-full h-20">
             <Icon />
+            <SessionsCount />
             <DateAndTime />
         </div>
     )
@@ -69,7 +71,6 @@ const DateAndTime = () => {
     const time = new Intl.DateTimeFormat(locale, {
         hour: "numeric",
         minute: "numeric",
-        second: "numeric",
     }).format(date)
 
     return (
@@ -85,7 +86,7 @@ const DateAndTime = () => {
 
 const Clock = ({ time }: { time: string }) => {
     return (
-        <div className="flex gap-2 stroke-green-500 ">
+        <div className="flex gap-1 stroke-green-500 ">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -101,4 +102,43 @@ const Clock = ({ time }: { time: string }) => {
             <p className="items-baseline">{time}</p>
         </div>
     )
+}
+
+const SessionsCount = () => {
+    const [sessions, setSessions] = useState<number>(0)
+
+    useEffect(() => {
+        let socket: Socket | null = null
+        connectViaSocket()
+
+        return () => {
+            window.removeEventListener("beforeUnload", closeSocket)
+            closeSocket()
+        }
+
+        async function connectViaSocket() {
+            await fetch("/api/initialize-socket")
+
+            socket = io({
+                path: "/api/socket",
+            })
+
+            socket.on("message", (message) => {
+                setSessions(message)
+            })
+
+            // If tab closes normally, close the socket as soon as possible
+            // If tab closes abruptly (e.g. the user's computer suddenly shuts down)
+            // the socket server will detect disconnection with slight lag
+            // (~ after pingTimeout milliseconds)
+            window.addEventListener("beforeUnload", closeSocket)
+        }
+
+        function closeSocket() {
+            socket?.close()
+            socket = null
+        }
+    }, [])
+
+    return <p>Active sessions: {sessions}</p>
 }
