@@ -1,43 +1,51 @@
 import React, { useState } from "react"
-import CustomLink from "./CustomLink"
+import { ReactNode } from "react"
+import Link from "next/link"
+import { useRouter } from "next/router"
 
 const Navbar = () => {
     return (
-        <div className="flex flex-col pt-24 items-center w-[15rem] shadow-lg">
-            <Avatar />
+        <div className="w-full h-full flex flex-col text-center shadow-2xl">
+            <div className="basis-[4em] grow-0 shrink-1"></div>
 
-            <div className="flex flex-col pt-20 font-bold text-lg gap-8">
-                <CustomLink href="/orders">ORDERS</CustomLink>
-                <CustomLink href="/products">PRODUCTS</CustomLink>
-                <CustomLink href="#">USERS</CustomLink>
-                <CustomLink href="#">SETTINGS</CustomLink>
+            <div className="px-[2em] shrink-1">
+                <Avatar />
             </div>
+
+            <div className="basis-20 grow-0 shrink-1"></div>
+
+            <div className="basis-10 grow-0 shrink-1">
+                <Links />
+            </div>
+
+            <div className="basis-40 grow-0 shrink-1"></div>
         </div>
     )
 }
+
+export default Navbar
 
 const Avatar = () => {
     const avatar = (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-            className="w-36 h-36 rounded-full"
+            className="rounded-full"
             src="/photos/takanaka.jpeg"
             alt="Takanaka"
         />
     )
 
     return (
-        <div className="relative">
+        <div className="w-full h-fit relative">
             {avatar}
-            <span className="absolute bottom-3 right-0 transform translate-y-1/4 w-16 h-16 bg-white shadow-2xl rounded-full">
-                <div className="pt-2.5 pl-2.5">
+            <span className="absolute bottom-0 right-0 transform translate-y-1/5 w-12 h-12 bg-white shadow-2xl shadow-black rounded-full">
+                <div>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-11 h-11">
+                        stroke="currentColor">
                         <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -55,4 +63,36 @@ const Avatar = () => {
     )
 }
 
-export default Navbar
+const Links = () => {
+    return (
+        <div className="w-full h-full flex flex-col font-bold text-lg gap-8">
+            <CustomLink href="/orders">ORDERS</CustomLink>
+            <CustomLink href="/products">PRODUCTS</CustomLink>
+            <CustomLink href="#">USERS</CustomLink>
+            <CustomLink href="#">SETTINGS</CustomLink>
+        </div>
+    )
+}
+
+interface CustomLinkProps {
+    href: string
+    children: ReactNode
+}
+
+function CustomLink({ href, children }: CustomLinkProps) {
+    const router = useRouter()
+    const isActive = router.pathname === href
+
+    return (
+        <Link href={href} className="w-full h-full">
+            <h1
+                className={
+                    isActive
+                        ? "underline decoration-green-500 decoration-solid decoration-4"
+                        : ""
+                }>
+                {children}
+            </h1>
+        </Link>
+    )
+}

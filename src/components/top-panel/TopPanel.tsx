@@ -3,7 +3,7 @@ import { io, Socket } from "socket.io-client"
 
 const TopPanel = () => {
     return (
-        <div className="flex justify-around items-center shadow-md w-full h-20">
+        <div className="w-full h-full flex justify-around items-center shadow-md">
             <Icon />
             <SessionsCount />
             <DateAndTime />
