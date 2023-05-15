@@ -1,10 +1,15 @@
+import OrderList from "@/components/order/order-list/OrderList"
+import { orders } from "@/mock-data/orders"
+
 export default function Home() {
     return (
-        <div className="w-full h-full pt-24 pl-28 pr-28 pb-28">
+        <div className="w-full h-full pt-16 pl-28 pr-28 pb-28">
             <div className="flex items-center gap-3 stroke-green-500">
                 <OrderCount />
             </div>
-            <div className="pt-10"></div>
+            <div className="pt-10">
+                <OrderList orders={orders} />
+            </div>
         </div>
     )
 }

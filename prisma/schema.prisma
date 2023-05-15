@@ -16,26 +16,28 @@ model Order {
 }
 
 model Product {
-  id             Int     @id @default(autoincrement())
-  serialNumber   String
-  isNew          Boolean
-  photo          String
-  title          String
-  type           String
-  specification  String
-  guaranteeStart Int     @db.Int
-  guaranteeEnd   Int     @db.Int
+  id Int @id @default(autoincrement())
 
-  price          Price[]
+  serialNumber String
+  imageUrl     String
+  title        String
+  isAvailable  Boolean
+  dateTime     Int     @db.Int
 
-  order          Order   @relation(fields: [orderId], references: [id])
-  orderId        Int
+  type          String
+  specification String
 
-  dateTime       Int     @db.Int
+  guaranteeStart Int @db.Int
+  guaranteeEnd Int @db.Int
+
+  price Price[]
+
+  order   Order @relation(fields: [orderId], references: [id])
+  orderId Int
 }
 
 model Price {
-  id        Int     @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   value     Int
   symbol    String

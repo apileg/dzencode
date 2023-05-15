@@ -9,8 +9,8 @@ export default function App({ Component, pageProps }: AppProps) {
             <div className="basis-20 shrink-0 grow-0">
                 <TopPanel />
             </div>
-            <div className="grow shrink-1 flex flex-row">
-                <div className="basis-[15em] shrink-0 grow-0">
+            <div className="grow shrink-1 min-h-0 flex flex-row">
+                <div className="basis-[12em] shrink-0 grow-0">
                     <Navbar />
                 </div>
                 <div className="grow">
