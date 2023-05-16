@@ -1,3 +1,5 @@
+import { ProductAvailabilityEnum, UsedOrNewEnum } from "@prisma/client"
+
 export type Timestamp = number
 
 export interface Order {
@@ -17,14 +19,11 @@ export interface SlimOrder {
     guaranteeEnd: Timestamp
 }
 
-export type ProductAvailability = "available" | "inMaintenance"
-export type UsedOrNew = "used" | "new"
-
 export interface SlimProduct {
     id: number
     title: string
     serialNumber: string
-    availability: ProductAvailability
+    availability: ProductAvailabilityEnum
 }
 
 export interface Product {
@@ -32,8 +31,8 @@ export interface Product {
     title: string
     serialNumber: string
 
-    availability: ProductAvailability
-    usedOrNew: UsedOrNew
+    availability: ProductAvailabilityEnum
+    usedOrNew: UsedOrNewEnum
 
     imageUrl: string
     type: string

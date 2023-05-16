@@ -1,27 +1,42 @@
-import AddIcon from "@/components/common/AddIcon"
-import OrderList from "@/components/order/OrderList"
-import { orders } from "@/mock-data/orders"
+import OrderPage, { OrderPageProps } from "@/components/order/OrderPage"
+import { prisma } from "@/db"
+import { GetServerSideProps } from "next"
 
-export default function Home() {
-    return (
-        <div className="w-full h-full p-20">
-            <div className="flex items-center gap-3">
-                <OrderCount value={orders.length} />
-            </div>
-            <div className="pt-10">
-                <OrderList orders={orders} />
-            </div>
-        </div>
-    )
+export default function Home(props: OrderPageProps) {
+    return <OrderPage {...props} />
 }
 
-const OrderCount = ({ value }: { value: number }) => {
-    return (
-        <>
-            <AddIcon className="w-10 h-10" stroke="stroke-green-500" />
-            <h1 className="font-medium text-2xl tracking-widest">
-                Orders / {value}
-            </h1>
-        </>
-    )
+export const getServerSideProps: GetServerSideProps<
+    OrderPageProps
+> = async () => {
+    const entities = (await prisma.$queryRaw`
+        select
+            o.id,
+            o.title,
+            o.createdAt,
+            count(p.id) as productsCount,
+            sum(p.priceUsd) as totalUsd,
+            sum(p.priceUah) as totalUah
+        from
+            orderEntity as o
+        inner join
+            productEntity as p
+        on
+            p.orderId = o.id
+        group by
+            o.id
+    `) as any[]
+
+    const orders = entities.map((e) => ({
+        ...e,
+        productsCount: Number(e.productsCount),
+        totalUsd: Number(e.totalUsd / 100),
+        totalUah: Number(e.totalUah / 100),
+    }))
+
+    return {
+        props: {
+            orders,
+        },
+    }
 }

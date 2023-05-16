@@ -1,4 +1,4 @@
-import { Product, ProductAvailability } from "@/model"
+import { Product } from "@/model"
 import TrashIcon from "../common/TrashIcon"
 import AddIcon from "../common/AddIcon"
 
@@ -77,12 +77,12 @@ const ProductItem = ({
     }
 
     const availabilityStyles =
-        availability === "available"
+        availability === "Available"
             ? "text-green-500 text-sm"
             : "text-red-500 text-sm"
 
     const availabilityText =
-        availability === "available" ? "Available" : "In maintenance"
+        availability === "Available" ? "Available" : "In maintenance"
 
     return (
         <div className="flex items-center justify-between">

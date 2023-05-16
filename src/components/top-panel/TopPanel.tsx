@@ -110,7 +110,9 @@ const SessionsCount = () => {
         }
 
         async function connectViaSocket() {
-            await fetch("/api/initialize-socket")
+            // This endpoint should be POST, not GET, since it changes
+            // the server state (starts the Socket.io server)
+            await fetch("/api/initialize-socket", { method: "POST" })
 
             socket = io({
                 path: "/api/socket",

@@ -2,9 +2,13 @@ import { NextApiHandler } from "next"
 import { Server, Socket } from "socket.io"
 
 const handler: NextApiHandler = async (request, response) => {
-    const server = (response.socket as any).server
-
     try {
+        if (request.method !== "POST") {
+            response.status(400)
+            return
+        }
+
+        const server = (response.socket as any).server
         if (server.io) {
             return
         }

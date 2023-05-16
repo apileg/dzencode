@@ -52,7 +52,7 @@ const OrderListItem = ({
     return (
         <div className="border-2 solid rounded-md p-3 m-3">
             <div
-                className="flex items-center justify-around text-[#135164]"
+                className="flex items-center justify-around pr-[1%] text-[#135164]"
                 onClick={onClick}>
                 <Content />
             </div>
