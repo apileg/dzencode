@@ -1,12 +1,15 @@
-import React, { useEffect, useState, memo, useCallback } from "react"
-import { io, Socket } from "socket.io-client"
+import { useEffect, useState } from "react"
+import { Socket, io } from "socket.io-client"
+import ClientSide from "../ClientSide"
 
 const TopPanel = () => {
     return (
         <div className="w-full h-full flex justify-around items-center shadow-md">
             <Icon />
-            <SessionsCount />
-            <DateAndTime />
+            <ClientSide>
+                <SessionsCount />
+                <DateAndTime />
+            </ClientSide>
         </div>
     )
 }
@@ -34,10 +37,6 @@ const Icon = () => {
 }
 
 const DateAndTime = () => {
-    // Used to render this component on client only. See the first bullet point
-    // of https://github.com/facebook/react/issues/25627#issuecomment-1444073227
-    const [isMounted, setIsMounted] = useState(false)
-
     const [date, setDate] = useState<Date>(new Date())
 
     useEffect(() => {
@@ -45,16 +44,10 @@ const DateAndTime = () => {
             setDate(new Date())
         }, 1000)
 
-        setIsMounted(true)
-
         return () => {
             clearInterval(interval)
         }
     }, [])
-
-    if (!isMounted) {
-        return null
-    }
 
     const locale = [navigator.language]
 

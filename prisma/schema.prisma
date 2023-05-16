@@ -7,42 +7,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Order {
-  id          Int       @id @default(autoincrement())
-  title       String
-  dateTime    Int       @db.Int
-  description String
-  products    Product[]
+model OrderEntity {
+  id    Int    @id @default(autoincrement())
+  title String
+  createdAt Int @db.Int
+
+  products ProductEntity[]
 }
 
-model Product {
+model ProductEntity {
   id Int @id @default(autoincrement())
-
+  title String
   serialNumber String
-  imageUrl     String
-  title        String
-  isAvailable  Boolean
-  dateTime     Int     @db.Int
 
-  type          String
-  specification String
+  availability ProductAvailabilityEnum
+  usedOrNew UsedOrNewEnum
 
-  guaranteeStart Int @db.Int
-  guaranteeEnd Int @db.Int
+  imageUrl String
+  type String
 
-  price Price[]
+  guaranteeEnd   Int @db.Int
 
-  order   Order @relation(fields: [orderId], references: [id])
+  priceUsd Int @db.UnsignedInt
+  priceUah Int @db.UnsignedInt
+
+  groupName String
+  customerFullName String
+
   orderId Int
+  order OrderEntity @relation(fields: [orderId], references: [id])
 }
 
-model Price {
-  id Int @id @default(autoincrement())
+enum ProductAvailabilityEnum {
+  Available
+  InMaintenance
+}
 
-  value     Int
-  symbol    String
-  isDefault Boolean
-
-  product   Product @relation(fields: [productId], references: [id])
-  productId Int
+enum UsedOrNewEnum {
+  Used
+  New
 }

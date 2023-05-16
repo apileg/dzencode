@@ -1,5 +1,6 @@
-import { Order } from "@prisma/client"
-import { useState } from "react"
+import ClientSide from "@/components/ClientSide"
+import { Order } from "@/model"
+import TrashIcon from "../common/TrashIcon"
 
 interface OrderListItemProps {
     order: Order
@@ -9,46 +10,48 @@ interface OrderListItemProps {
 }
 
 const OrderListItem = ({
-    order: { title, dateTime },
+    order: { title, productsCount, createdAt, totalUah, totalUsd },
     isCurrent,
     isExpanded,
     onClick,
 }: OrderListItemProps) => {
-    const IsClicked = ({ clicked }: { clicked: boolean }): JSX.Element => {
-        return (
-            <>
-                {clicked ? (
-                    <>
-                        <ProductCount productsCount={42} />
-                        <DataAndTime dateTime={dateTime} />
-                        {isCurrent ? (
-                            <>
-                                <div className="h-full bg-[#cfd8dc]">{">"}</div>
-                            </>
-                        ) : null}
-                    </>
-                ) : (
-                    <>
-                        <h1 className="underline tracking-widest">{title}</h1>
-                        <ProductCount productsCount={42} />
-                        <DataAndTime dateTime={dateTime} />
-                        <p>$$$$$</p>
-                        <p>Trash button</p>
-                    </>
-                )}
-            </>
-        )
-    }
+    const Content = isExpanded ? ExpandedContent : CollapsedContent
 
     return (
         <div className="border-2 solid rounded-md p-3 m-3">
             <div
                 className="flex items-center justify-around text-[#135164]"
                 onClick={onClick}>
-                <IsClicked clicked={isExpanded} />
+                <Content />
             </div>
         </div>
     )
+
+    function ExpandedContent() {
+        return (
+            <>
+                <ProductCount productsCount={productsCount} />
+                <ClientSide>
+                    <DataAndTime createdAt={createdAt} />
+                </ClientSide>
+                {isCurrent && <div className="h-full bg-[#cfd8dc]">{">"}</div>}
+            </>
+        )
+    }
+
+    function CollapsedContent() {
+        return (
+            <>
+                <h1 className="underline tracking-widest">{title}</h1>
+                <ProductCount productsCount={productsCount} />
+                <ClientSide>
+                    <DataAndTime createdAt={createdAt} />
+                </ClientSide>
+                <Prices priceUsd={totalUsd} priceUah={totalUah} />
+                <TrashIcon />
+            </>
+        )
+    }
 }
 
 export default OrderListItem
@@ -81,28 +84,51 @@ const ProductCount = ({ productsCount }: { productsCount: number }) => {
     )
 }
 
-const DataAndTime = ({ dateTime }: { dateTime: number }) => {
-    const date = new Date(dateTime * 1000)
+const DataAndTime = ({ createdAt }: { createdAt: number }) => {
+    const createdAtDate = new Date(createdAt * 1000)
 
-    //TODO: if not in useEffect => navigator.language === undefined
-    //const locale = [navigator.language]
+    const locale = [navigator.language]
 
-    const formattedDayMonthYear = new Intl.DateTimeFormat("en-GB", {
+    const formattedDayMonthYear = new Intl.DateTimeFormat(locale, {
         day: "numeric",
         month: "long",
         year: "numeric",
-    }).format(date)
+    }).format(createdAtDate)
 
-    //TODO: this will guarantee start month / guarantee end month format
-    const formattedMonthYear = new Intl.DateTimeFormat("en-GB", {
+    const formattedMonthYear = new Intl.DateTimeFormat(locale, {
         month: "numeric",
         year: "numeric",
-    }).format(date)
+    }).format(createdAtDate)
 
     return (
         <div className="flex flex-col items-center tracking-wide">
             <p className="text-xs text-[#9fb0b7]">{formattedMonthYear}</p>
             <p>{formattedDayMonthYear.split(" ").join(" / ")}</p>
+        </div>
+    )
+}
+
+const Prices = ({
+    priceUsd,
+    priceUah,
+}: {
+    priceUsd: number
+    priceUah: number
+}) => {
+    const inUsd = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+    }).format(priceUsd)
+
+    const inUah = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "UAH",
+    }).format(priceUah)
+
+    return (
+        <div className="flex flex-col items-start tracking-wide">
+            <p className="text-xs text-[#9fb0b7]">{inUsd}</p>
+            <p>{inUah}</p>
         </div>
     )
 }
