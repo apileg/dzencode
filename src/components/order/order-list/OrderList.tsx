@@ -9,28 +9,36 @@ interface OrderListProps {
 }
 
 const OrderList = ({ orders }: OrderListProps) => {
-    const [expandedOrder, setExpandedOrder] = useState<Order | null>(null)
-
+    const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null)
+    const [isExpanded, setIsExpanded] = useState<boolean>(false)
+    //TODO: isExpanded to localstorage
     const showInfo = (order: Order) => {
-        setExpandedOrder(order)
+        setExpandedOrderId(order.id)
+        setIsExpanded(true)
     }
 
     // add flex style
     return (
-        <div>
-            <div>
+        <div className="flex">
+            <div className="flex flex-col shrink grow">
                 {orders.map((el) => (
+                    //TODO: change key
                     <OrderListItem
                         order={el}
                         key={el.title}
                         onClick={() => showInfo(el)}
+                        isCurrent={el.id === expandedOrderId}
+                        isExpanded={isExpanded}
                     />
                 ))}
             </div>
-            <div>
-                {expandedOrder !== null ? (
+            <div className="flex flex-col shrink-0 grow-0">
+                {expandedOrderId !== null && isExpanded ? (
                     <OrderInfo
-                        orderTitle={expandedOrder.title}
+                        orderTitle={
+                            orders.find((order) => order.id === expandedOrderId)
+                                ?.title!
+                        }
                         products={products}
                     />
                 ) : null}
