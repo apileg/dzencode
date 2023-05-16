@@ -3,7 +3,7 @@ import { Order } from "@/model"
 export const orders: Order[] = [
     {
         id: 1,
-        title: "First Order",
+        title: "Order 1",
         createdAt: 1652116800,
         productsCount: 3,
         totalUsd: 45.99,
@@ -11,7 +11,7 @@ export const orders: Order[] = [
     },
     {
         id: 2,
-        title: "Second Order",
+        title: "Order 2",
         createdAt: 1652203200,
         productsCount: 2,
         totalUsd: 29.99,
@@ -19,7 +19,7 @@ export const orders: Order[] = [
     },
     {
         id: 3,
-        title: "Third Order",
+        title: "Order 3",
         createdAt: 1652289600,
         productsCount: 1,
         totalUsd: 12.49,
@@ -27,7 +27,7 @@ export const orders: Order[] = [
     },
     {
         id: 4,
-        title: "Fourth Order",
+        title: "Order 4",
         createdAt: 1652376000,
         productsCount: 4,
         totalUsd: 75.99,
@@ -35,7 +35,7 @@ export const orders: Order[] = [
     },
     {
         id: 5,
-        title: "Fifth Order",
+        title: "Order 5",
         createdAt: 1652462400,
         productsCount: 2,
         totalUsd: 35.99,
@@ -43,7 +43,7 @@ export const orders: Order[] = [
     },
     {
         id: 6,
-        title: "Sixth Order",
+        title: "Order 6",
         createdAt: 1652548800,
         productsCount: 1,
         totalUsd: 9.99,
@@ -51,7 +51,7 @@ export const orders: Order[] = [
     },
     {
         id: 7,
-        title: "Seventh Order",
+        title: "Order 7",
         createdAt: 1652635200,
         productsCount: 3,
         totalUsd: 50.49,
@@ -59,7 +59,7 @@ export const orders: Order[] = [
     },
     {
         id: 8,
-        title: "Eighth Order",
+        title: "Order 8",
         createdAt: 1652721600,
         productsCount: 5,
         totalUsd: 99.99,
@@ -67,7 +67,7 @@ export const orders: Order[] = [
     },
     {
         id: 9,
-        title: "Ninth Order",
+        title: "Order 9",
         createdAt: 1652808000,
         productsCount: 2,
         totalUsd: 24.99,
@@ -75,7 +75,7 @@ export const orders: Order[] = [
     },
     {
         id: 10,
-        title: "Tenth Order",
+        title: "Order 0",
         createdAt: 1652894400,
         productsCount: 1,
         totalUsd: 7.99,

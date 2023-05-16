@@ -29,11 +29,12 @@ const OrderList = ({ orders }: OrderListProps) => {
     )?.title
 
     const firstColumnSizeClasses =
-        expandedOrderId === null ? "grow" : "basis-2/5 grow-0"
+        expandedOrderId === null ? "grow" : "basis-3/4 grow-0"
 
     return (
         <div className="flex">
-            <div className={`flex flex-col grow ${firstColumnSizeClasses}`}>
+            <div
+                className={`flex flex-col grow ${firstColumnSizeClasses} cursor-pointer`}>
                 {orders.map((el) => (
                     <OrderListItem
                         order={el}
@@ -45,13 +46,11 @@ const OrderList = ({ orders }: OrderListProps) => {
                 ))}
             </div>
             {expandedOrderId !== null && (
-                <div className="flex flex-col shrink-0 grow-0">
-                    <OrderInfo
-                        orderTitle={expandedOrderTitle!}
-                        products={products}
-                        onCloseClick={closeMenu}
-                    />
-                </div>
+                <OrderInfo
+                    orderTitle={expandedOrderTitle!}
+                    products={products}
+                    onCloseClick={closeMenu}
+                />
             )}
         </div>
     )

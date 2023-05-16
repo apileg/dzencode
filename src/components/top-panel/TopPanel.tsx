@@ -98,7 +98,7 @@ const Clock = ({ time }: { time: string }) => {
 }
 
 const SessionsCount = () => {
-    const [sessions, setSessions] = useState<number>(0)
+    const [sessions, setSessions] = useState<number | null>(null)
 
     useEffect(() => {
         let socket: Socket | null = null
@@ -133,5 +133,5 @@ const SessionsCount = () => {
         }
     }, [])
 
-    return <p>Active sessions: {sessions}</p>
+    return <p>Active sessions: {sessions === null ? "loading" : sessions}</p>
 }

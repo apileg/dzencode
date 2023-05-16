@@ -10,36 +10,31 @@ interface OrderListItemProps {
 }
 
 const OrderListItem = ({
-    order: { title, productsCount, createdAt, totalUah, totalUsd },
+    order: { title, productsCount, createdAt, totalUsd, totalUah },
     isCurrent,
     isExpanded,
     onClick,
 }: OrderListItemProps) => {
-    const Content = isExpanded ? ExpandedContent : CollapsedContent
-
-    return (
-        <div className="border-2 solid rounded-md p-3 m-3">
-            <div
-                className="flex items-center justify-around text-[#135164]"
-                onClick={onClick}>
-                <Content />
+    const Arrow = () => {
+        return (
+            <div className="h-full flex justify-end items-center text-xl text-[#cddc39]">
+                {">"}
             </div>
-        </div>
-    )
-
-    function ExpandedContent() {
+        )
+    }
+    const Expanded = () => {
         return (
             <>
                 <ProductCount productsCount={productsCount} />
                 <ClientSide>
                     <DataAndTime createdAt={createdAt} />
                 </ClientSide>
-                {isCurrent && <div className="h-full bg-[#cfd8dc]">{">"}</div>}
+                {isCurrent && <Arrow />}
             </>
         )
     }
 
-    function CollapsedContent() {
+    const Collapsed = () => {
         return (
             <>
                 <h1 className="underline tracking-widest">{title}</h1>
@@ -52,6 +47,17 @@ const OrderListItem = ({
             </>
         )
     }
+    const Content = isExpanded ? Expanded : Collapsed
+
+    return (
+        <div className="border-2 solid rounded-md p-3 m-3">
+            <div
+                className="flex items-center justify-around text-[#135164]"
+                onClick={onClick}>
+                <Content />
+            </div>
+        </div>
+    )
 }
 
 export default OrderListItem
