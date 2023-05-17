@@ -15,52 +15,85 @@ const OrderListItem = ({
     isExpanded,
     onClick,
 }: OrderListItemProps) => {
-    const Arrow = () => {
-        return (
-            <div className="h-full flex justify-end items-center text-xl text-[#cddc39]">
-                {">"}
-            </div>
-        )
-    }
-    const Expanded = () => {
-        return (
-            <>
-                <ProductCount productsCount={productsCount} />
-                <ClientSide>
-                    <DataAndTime createdAt={createdAt} />
-                </ClientSide>
-                {isCurrent && <Arrow />}
-            </>
-        )
-    }
-
-    const Collapsed = () => {
-        return (
-            <>
-                <h1 className="underline tracking-widest">{title}</h1>
-                <ProductCount productsCount={productsCount} />
-                <ClientSide>
-                    <DataAndTime createdAt={createdAt} />
-                </ClientSide>
-                <Prices priceUsd={totalUsd} priceUah={totalUah} />
-                <TrashIcon />
-            </>
-        )
-    }
-    const Content = isExpanded ? Expanded : Collapsed
-
     return (
         <div className="border-2 solid rounded-md p-3 m-3">
             <div
                 className="flex items-center justify-around pr-[1%] text-[#135164]"
                 onClick={onClick}>
-                <Content />
+                {isExpanded ? (
+                    <Expanded
+                        productsCount={productsCount}
+                        createdAt={createdAt}
+                        arrowShown={isCurrent}
+                    />
+                ) : (
+                    <Collapsed
+                        title={title}
+                        productsCount={productsCount}
+                        createdAt={createdAt}
+                        totalUsd={totalUsd}
+                        totalUah={totalUah}
+                    />
+                )}
             </div>
         </div>
     )
 }
 
 export default OrderListItem
+
+interface ExpandedProps {
+    productsCount: number
+    createdAt: number
+    arrowShown: boolean
+}
+
+// Note: don't define those components inside of <OrderListItem>. This will
+// cause flicker on rerender. See:
+// https://stackoverflow.com/questions/69306890/rendering-component-in-react-shows-flicker
+const Expanded = ({ productsCount, createdAt, arrowShown }: ExpandedProps) => {
+    return (
+        <>
+            <ProductCount productsCount={productsCount} />
+            <ClientSide>
+                <DataAndTime createdAt={createdAt} />
+            </ClientSide>
+            {arrowShown && <Arrow />}
+        </>
+    )
+}
+
+const Arrow = () => {
+    return <div className="h-full flex text-xl text-[#cddc39]">{">"}</div>
+}
+
+interface CollapsedProps {
+    title: string
+    productsCount: number
+    createdAt: number
+    totalUsd: number
+    totalUah: number
+}
+
+const Collapsed = ({
+    title,
+    productsCount,
+    createdAt,
+    totalUsd,
+    totalUah,
+}: CollapsedProps) => {
+    return (
+        <>
+            <h1 className="underline tracking-widest">{title}</h1>
+            <ProductCount productsCount={productsCount} />
+            <ClientSide>
+                <DataAndTime createdAt={createdAt} />
+            </ClientSide>
+            <Prices priceUsd={totalUsd} priceUah={totalUah} />
+            <TrashIcon />
+        </>
+    )
+}
 
 const ProductCount = ({ productsCount }: { productsCount: number }) => {
     return (

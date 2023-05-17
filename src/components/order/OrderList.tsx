@@ -1,5 +1,5 @@
-import { products } from "@/mock-data/products"
-import { Order } from "@/model"
+import { Order, Product } from "@/model"
+import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import OrderInfo from "./OrderInfo"
 import OrderListItem from "./OrderListItem"
@@ -9,45 +9,47 @@ interface OrderListProps {
 }
 
 const OrderList = ({ orders }: OrderListProps) => {
-    const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null)
+    const [expandedOrder, setExpandedOrder] = useState<Order | null>(null)
+
+    const { data: products } = useQuery({
+        queryKey: ["product", expandedOrder],
+        queryFn: () => fetchProduct(expandedOrder!.id),
+        enabled: expandedOrder !== null,
+    })
 
     const showInfo = (order: Order) => {
-        if (expandedOrderId === order.id) {
-            setExpandedOrderId(null)
+        if (expandedOrder?.id === order.id) {
+            setExpandedOrder(null)
             return
         }
 
-        setExpandedOrderId(order.id)
+        setExpandedOrder(order)
     }
 
     const closeMenu = () => {
-        setExpandedOrderId(null)
+        setExpandedOrder(null)
     }
 
-    const expandedOrderTitle = orders.find(
-        (order) => order.id === expandedOrderId
-    )?.title
-
     const firstColumnSizeClasses =
-        expandedOrderId === null ? "grow" : "basis-3/4 grow-0"
+        expandedOrder === null ? "grow" : "basis-3/4 grow-0"
 
     return (
         <div className="flex">
             <div
-                className={`flex flex-col grow ${firstColumnSizeClasses} cursor-pointer`}>
+                className={`flex flex-col ${firstColumnSizeClasses} cursor-pointer`}>
                 {orders.map((el) => (
                     <OrderListItem
                         order={el}
                         key={el.id}
                         onClick={() => showInfo(el)}
-                        isCurrent={el.id === expandedOrderId}
-                        isExpanded={expandedOrderId !== null}
+                        isCurrent={el.id === expandedOrder?.id}
+                        isExpanded={expandedOrder !== null}
                     />
                 ))}
             </div>
-            {expandedOrderId !== null && (
+            {products !== undefined && (
                 <OrderInfo
-                    orderTitle={expandedOrderTitle!}
+                    orderTitle={expandedOrder!.title}
                     products={products}
                     onCloseClick={closeMenu}
                 />
@@ -57,3 +59,10 @@ const OrderList = ({ orders }: OrderListProps) => {
 }
 
 export default OrderList
+
+const fetchProduct = async (id: number): Promise<Product[]> => {
+    const response = await fetch(`/api/order/${id}/products`)
+    const product = await response.json()
+
+    return product
+}

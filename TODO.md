@@ -3,11 +3,13 @@
 -   Redirect from index.ts to some page. Or think about what to display there
 -   Memoize DateAndTime component
 -   Takanaka's photo in Navbar is hardcoded (add User model)
+-   Use table instead of flex in OrderList
 
 # NEXT:
 
--   Use table instead of flex in OrderList
--   getServerSideProps() for orders list. Define DTOs
--   Expand/collapse UI
--   useQueries to fetch products of an Order
--   OrderList item navigator.language bug / component props must contain guaranteeStart and guaranteeEnd
+-   Delete orders and products with model window in /orders
+-   /products page:
+    -   Table
+    -   Filtering
+    -   Deletion
+-   Pack all this into Docker
