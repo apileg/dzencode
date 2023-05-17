@@ -17,3 +17,4 @@
 -   Pack all this into Docker
 -   Unit test API
 -   Unit test hook for /products
+-   Add OrderInfo relative close button

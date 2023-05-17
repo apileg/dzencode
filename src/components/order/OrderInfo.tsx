@@ -1,14 +1,18 @@
 import { Product } from "@/model"
 import TrashIcon from "../common/TrashIcon"
 import AddIcon from "../common/AddIcon"
+import { useOrdersStore } from "./store"
 
 interface OrderInfoProps {
-    orderTitle: string
     products: Product[]
-    onCloseClick: () => void
 }
 
-const OrderInfo = ({ orderTitle, products }: OrderInfoProps) => {
+const OrderInfo = ({ products }: OrderInfoProps) => {
+    const orderTitle = useOrdersStore((store) => store.expandedOrder!.title)
+
+    // See TODO
+    // const closeOrder = useOrdersStore(store => store.closeCurrentOrder)
+
     return (
         <div className="w-full h-full border-2 solid rounded-md p-3 m-3">
             <div className="pt-3 px-3">

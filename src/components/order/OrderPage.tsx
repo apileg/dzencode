@@ -1,8 +1,9 @@
 import AddIcon from "@/components/common/AddIcon"
 import OrderList from "@/components/order/OrderList"
 import { Order } from "@/model"
-import { useState } from "react"
+import { useOrdersStore } from "./store"
 import { useMutation } from "@tanstack/react-query"
+import { useEffect, useState } from "react"
 
 export interface OrderPageProps {
     initialOrders: Order[]
@@ -11,24 +12,19 @@ export interface OrderPageProps {
 export type DeleteOrderFn = (order: Order) => void
 
 const OrderPage = ({ initialOrders }: OrderPageProps) => {
-    const [orders, setOrders] = useState<Order[]>(initialOrders)
+    const hydrate = useOrdersStore((store) => store.hydrate)
 
-    const deleteMutation = useMutation({
-        mutationFn: deleteOrder,
-    })
-
-    const doDeleteOrder = async (order: Order) => {
-        await deleteMutation.mutateAsync(order.id)
-        setOrders((previous) => previous.filter((o) => o !== order))
-    }
+    useEffect(() => {
+        hydrate(initialOrders)
+    }, [])
 
     return (
         <div className="w-full h-full p-20">
             <div className="flex items-center gap-3">
-                <OrderCount value={orders.length} />
+                <OrderCount />
             </div>
             <div className="pt-10">
-                <OrderList orders={orders} deleteOrder={doDeleteOrder} />
+                <OrderList />
             </div>
         </div>
     )
@@ -36,16 +32,14 @@ const OrderPage = ({ initialOrders }: OrderPageProps) => {
 
 export default OrderPage
 
-const deleteOrder = async (orderId: number) => {
-    await fetch(`/api/order/${orderId}`, { method: "DELETE" })
-}
+const OrderCount = () => {
+    const count = useOrdersStore((store) => store.orders.length)
 
-const OrderCount = ({ value }: { value: number }) => {
     return (
         <>
             <AddIcon className="w-10 h-10" stroke="stroke-green-500" />
             <h1 className="font-medium text-2xl tracking-widest">
-                Orders / {value}
+                Orders / {count}
             </h1>
         </>
     )

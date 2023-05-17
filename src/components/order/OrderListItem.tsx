@@ -1,39 +1,26 @@
 import ClientSide from "@/components/ClientSide"
-import { Order } from "@/model"
+import { useMutation } from "@tanstack/react-query"
+import { useOrdersStore } from "./store"
 import TrashIcon from "../common/TrashIcon"
-import { DeleteOrderFn } from "./OrderPage"
 
 interface OrderListItemProps {
-    order: Order
+    orderIndex: number
     isCurrent: boolean
     isExpanded: boolean
-    onClick: () => void
-    deleteOrder: DeleteOrderFn
 }
 
 const OrderListItem = ({
-    order,
+    orderIndex,
     isCurrent,
     isExpanded,
-    onClick,
-    deleteOrder,
 }: OrderListItemProps) => {
     return (
         <div className="border-2 solid rounded-md p-3 m-3">
             <div className="flex items-center justify-around pr-[1%] text-[#135164]">
                 {isExpanded ? (
-                    <Expanded
-                        productsCount={order.productsCount}
-                        createdAt={order.createdAt}
-                        arrowShown={isCurrent}
-                        onClick={onClick}
-                    />
+                    <Expanded orderIndex={orderIndex} arrowShown={isCurrent} />
                 ) : (
-                    <Collapsed
-                        order={order}
-                        onClick={onClick}
-                        deleteOrder={deleteOrder}
-                    />
+                    <Collapsed orderIndex={orderIndex} />
                 )}
             </div>
         </div>
@@ -43,24 +30,24 @@ const OrderListItem = ({
 export default OrderListItem
 
 interface ExpandedProps {
-    productsCount: number
-    createdAt: number
+    orderIndex: number
     arrowShown: boolean
-    onClick: () => void
 }
 
 // Note: don't define those components inside of <OrderListItem>. This will
 // cause flicker on rerender. See:
 // https://stackoverflow.com/questions/69306890/rendering-component-in-react-shows-flicker
-const Expanded = ({
-    productsCount,
-    onClick,
-    createdAt,
-    arrowShown,
-}: ExpandedProps) => {
+const Expanded = ({ orderIndex, arrowShown }: ExpandedProps) => {
+    const { productsCount, createdAt } = useOrdersStore(
+        (store) => store.orders[orderIndex]
+    )
+
     return (
         <>
-            <ProductCount productsCount={productsCount} onClick={onClick} />
+            <ProductCount
+                orderIndex={orderIndex}
+                productsCount={productsCount}
+            />
             <ClientSide>
                 <DataAndTime createdAt={createdAt} />
             </ClientSide>
@@ -74,42 +61,51 @@ const Arrow = () => {
 }
 
 interface CollapsedProps {
-    order: Order
-    onClick: () => void
-    deleteOrder: DeleteOrderFn
+    orderIndex: number
 }
 
-const Collapsed = ({ order, onClick, deleteOrder }: CollapsedProps) => {
+const Collapsed = ({ orderIndex }: CollapsedProps) => {
+    const { title, productsCount, createdAt, totalUah, totalUsd } =
+        useOrdersStore((store) => store.orders[orderIndex])
+
+    const removeOrderAt = useOrdersStore((store) => store.removeOrderAt)
+
+    const removeMutation = useMutation({
+        mutationKey: ["order", orderIndex],
+        mutationFn: () => removeOrderAt(orderIndex),
+    })
+
     return (
         <>
-            <h1 className="underline tracking-widest">{order.title}</h1>
+            <h1 className="underline tracking-widest">{title}</h1>
             <ProductCount
-                productsCount={order.productsCount}
-                onClick={onClick}
+                orderIndex={orderIndex}
+                productsCount={productsCount}
             />
             <ClientSide>
-                <DataAndTime createdAt={order.createdAt} />
+                <DataAndTime createdAt={createdAt} />
             </ClientSide>
-            <Prices priceUsd={order.totalUsd} priceUah={order.totalUah} />
-            <TrashIcon onClick={() => deleteOrder(order)} />
+            <Prices priceUsd={totalUsd} priceUah={totalUah} />
+            <TrashIcon onClick={removeMutation.mutate} />
         </>
     )
 }
 
-const ProductCount = ({
-    productsCount,
-    onClick,
-}: {
+interface ProductCountProps {
+    orderIndex: number
     productsCount: number
-    onClick: () => void
-}) => {
+}
+
+const ProductCount = ({ orderIndex, productsCount }: ProductCountProps) => {
+    const clickOnOrderAt = useOrdersStore((store) => store.clickOnOrderAt)
+
     return (
         <div className="flex items-center">
             <div className="flex items-center w-8 h-8 rounded-full ring-2 ring-gray-400">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
-                    onClick={onClick}
+                    onClick={() => clickOnOrderAt(orderIndex)}
                     viewBox="0 0 24 24"
                     strokeWidth={1.9}
                     stroke="currentColor"
