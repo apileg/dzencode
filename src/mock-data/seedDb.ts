@@ -1,5 +1,5 @@
 import { ProductEntity } from "@prisma/client"
-import { prisma } from "../db"
+import { prisma } from "../prisma"
 import { Product } from "./../model"
 import { orders } from "./orders"
 import { products } from "./products"

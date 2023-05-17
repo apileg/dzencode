@@ -1,12 +1,11 @@
 import AddIcon from "@/components/common/AddIcon"
 import OrderList from "@/components/order/OrderList"
-import { Order } from "@/model"
+import { AppState } from "@/redux/store"
+import { useSelector } from "react-redux"
 
-export interface OrderPageProps {
-    orders: Order[]
-}
+const OrderPage = () => {
+    const orders = useSelector((appState: AppState) => appState.orders.orders)
 
-const OrderPage = ({ orders }: OrderPageProps) => {
     return (
         <div className="w-full h-full p-20">
             <div className="flex items-center gap-3">
