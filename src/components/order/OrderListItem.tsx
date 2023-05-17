@@ -5,15 +5,16 @@ import TrashIcon from "../common/TrashIcon"
 
 interface OrderListItemProps {
     orderIndex: number
-    isCurrent: boolean
-    isExpanded: boolean
 }
 
-const OrderListItem = ({
-    orderIndex,
-    isCurrent,
-    isExpanded,
-}: OrderListItemProps) => {
+const OrderListItem = ({ orderIndex }: OrderListItemProps) => {
+    const expandedOrderIndex = useOrdersStore(
+        (store) => store.expandedOrderIndex
+    )
+
+    const isExpanded = expandedOrderIndex !== null
+    const isCurrent = orderIndex === expandedOrderIndex
+
     return (
         <div className="border-2 solid rounded-md p-3 m-3">
             <div className="flex items-center justify-around pr-[1%] text-[#135164]">

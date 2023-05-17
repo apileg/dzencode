@@ -21,12 +21,7 @@ const OrderList = () => {
         <div className="flex">
             <div className={`flex flex-col ${firstColumnSizeClasses}`}>
                 {orders.map((order, index) => (
-                    <OrderListItem
-                        orderIndex={index}
-                        key={order.id}
-                        isCurrent={order.id === expandedOrder?.id}
-                        isExpanded={expandedOrder?.id !== undefined}
-                    />
+                    <OrderListItem orderIndex={index} key={order.id} />
                 ))}
             </div>
             {products !== undefined && <OrderInfo products={products} />}

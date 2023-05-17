@@ -37,9 +37,11 @@ export const getServerSideProps: GetServerSideProps<
 
     const orders = entities.map((e) => ({
         ...e,
+
+        // count() fields have bigint type for some reason
         productsCount: Number(e.productsCount),
-        totalUsd: Number(e.totalUsd / 100),
-        totalUah: Number(e.totalUah / 100),
+        totalUsd: Number(e.totalUsd),
+        totalUah: Number(e.totalUah),
     }))
 
     return {
