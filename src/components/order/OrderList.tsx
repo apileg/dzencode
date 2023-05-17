@@ -3,12 +3,14 @@ import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import OrderInfo from "./OrderInfo"
 import OrderListItem from "./OrderListItem"
+import { DeleteOrderFn } from "./OrderPage"
 
 interface OrderListProps {
     orders: Order[]
+    deleteOrder: DeleteOrderFn
 }
 
-const OrderList = ({ orders }: OrderListProps) => {
+const OrderList = ({ orders, deleteOrder }: OrderListProps) => {
     const [expandedOrder, setExpandedOrder] = useState<Order | null>(null)
 
     const { data: products } = useQuery({
@@ -35,8 +37,7 @@ const OrderList = ({ orders }: OrderListProps) => {
 
     return (
         <div className="flex">
-            <div
-                className={`flex flex-col ${firstColumnSizeClasses} cursor-pointer`}>
+            <div className={`flex flex-col ${firstColumnSizeClasses}`}>
                 {orders.map((el) => (
                     <OrderListItem
                         order={el}
@@ -44,6 +45,7 @@ const OrderList = ({ orders }: OrderListProps) => {
                         onClick={() => showInfo(el)}
                         isCurrent={el.id === expandedOrder?.id}
                         isExpanded={expandedOrder !== null}
+                        deleteOrder={deleteOrder}
                     />
                 ))}
             </div>

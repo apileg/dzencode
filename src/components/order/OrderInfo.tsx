@@ -100,7 +100,7 @@ const ProductItem = ({
             <p className={availabilityStyles}>{availabilityText}</p>
 
             <div className="flex justify-around" onClick={deleteOrder}>
-                <TrashIcon />
+                <TrashIcon onClick={() => {}} />
             </div>
         </div>
     )

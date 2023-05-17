@@ -4,7 +4,7 @@ import { parseId } from "../_parseId"
 
 const handler: NextApiHandler = async (req, res) => {
     try {
-        if (req.method !== "GET") {
+        if (req.method !== "DELETE") {
             res.status(404)
             return
         }

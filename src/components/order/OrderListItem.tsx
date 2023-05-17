@@ -1,38 +1,38 @@
 import ClientSide from "@/components/ClientSide"
 import { Order } from "@/model"
 import TrashIcon from "../common/TrashIcon"
+import { DeleteOrderFn } from "./OrderPage"
 
 interface OrderListItemProps {
     order: Order
     isCurrent: boolean
     isExpanded: boolean
     onClick: () => void
+    deleteOrder: DeleteOrderFn
 }
 
 const OrderListItem = ({
-    order: { title, productsCount, createdAt, totalUsd, totalUah },
+    order,
     isCurrent,
     isExpanded,
     onClick,
+    deleteOrder,
 }: OrderListItemProps) => {
     return (
         <div className="border-2 solid rounded-md p-3 m-3">
-            <div
-                className="flex items-center justify-around pr-[1%] text-[#135164]"
-                onClick={onClick}>
+            <div className="flex items-center justify-around pr-[1%] text-[#135164]">
                 {isExpanded ? (
                     <Expanded
-                        productsCount={productsCount}
-                        createdAt={createdAt}
+                        productsCount={order.productsCount}
+                        createdAt={order.createdAt}
                         arrowShown={isCurrent}
+                        onClick={onClick}
                     />
                 ) : (
                     <Collapsed
-                        title={title}
-                        productsCount={productsCount}
-                        createdAt={createdAt}
-                        totalUsd={totalUsd}
-                        totalUah={totalUah}
+                        order={order}
+                        onClick={onClick}
+                        deleteOrder={deleteOrder}
                     />
                 )}
             </div>
@@ -46,15 +46,21 @@ interface ExpandedProps {
     productsCount: number
     createdAt: number
     arrowShown: boolean
+    onClick: () => void
 }
 
 // Note: don't define those components inside of <OrderListItem>. This will
 // cause flicker on rerender. See:
 // https://stackoverflow.com/questions/69306890/rendering-component-in-react-shows-flicker
-const Expanded = ({ productsCount, createdAt, arrowShown }: ExpandedProps) => {
+const Expanded = ({
+    productsCount,
+    onClick,
+    createdAt,
+    arrowShown,
+}: ExpandedProps) => {
     return (
         <>
-            <ProductCount productsCount={productsCount} />
+            <ProductCount productsCount={productsCount} onClick={onClick} />
             <ClientSide>
                 <DataAndTime createdAt={createdAt} />
             </ClientSide>
@@ -68,44 +74,46 @@ const Arrow = () => {
 }
 
 interface CollapsedProps {
-    title: string
-    productsCount: number
-    createdAt: number
-    totalUsd: number
-    totalUah: number
+    order: Order
+    onClick: () => void
+    deleteOrder: DeleteOrderFn
 }
 
-const Collapsed = ({
-    title,
-    productsCount,
-    createdAt,
-    totalUsd,
-    totalUah,
-}: CollapsedProps) => {
+const Collapsed = ({ order, onClick, deleteOrder }: CollapsedProps) => {
     return (
         <>
-            <h1 className="underline tracking-widest">{title}</h1>
-            <ProductCount productsCount={productsCount} />
+            <h1 className="underline tracking-widest">{order.title}</h1>
+            <ProductCount
+                productsCount={order.productsCount}
+                onClick={onClick}
+            />
             <ClientSide>
-                <DataAndTime createdAt={createdAt} />
+                <DataAndTime createdAt={order.createdAt} />
             </ClientSide>
-            <Prices priceUsd={totalUsd} priceUah={totalUah} />
-            <TrashIcon />
+            <Prices priceUsd={order.totalUsd} priceUah={order.totalUah} />
+            <TrashIcon onClick={() => deleteOrder(order)} />
         </>
     )
 }
 
-const ProductCount = ({ productsCount }: { productsCount: number }) => {
+const ProductCount = ({
+    productsCount,
+    onClick,
+}: {
+    productsCount: number
+    onClick: () => void
+}) => {
     return (
         <div className="flex items-center">
             <div className="flex items-center w-8 h-8 rounded-full ring-2 ring-gray-400">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
+                    onClick={onClick}
                     viewBox="0 0 24 24"
                     strokeWidth={1.9}
                     stroke="currentColor"
-                    className="w-8 h-8 p-1">
+                    className="w-8 h-8 p-1 cursor-pointer">
                     <circle cx="6" cy="7" r="1.35" fill="currentColor" />
                     <circle cx="6" cy="13" r="1.35" fill="currentColor" />
                     <circle cx="6" cy="19" r="1.35" fill="currentColor" />

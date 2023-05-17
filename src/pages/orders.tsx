@@ -1,5 +1,5 @@
 import OrderPage, { OrderPageProps } from "@/components/order/OrderPage"
-import { prisma } from "@/db"
+import { prisma } from "@/prisma"
 import { GetServerSideProps } from "next"
 
 export default function Home(props: OrderPageProps) {
@@ -36,7 +36,7 @@ export const getServerSideProps: GetServerSideProps<
 
     return {
         props: {
-            orders,
+            initialOrders: orders,
         },
     }
 }
