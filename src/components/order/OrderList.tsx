@@ -1,22 +1,21 @@
-import { Order, Product } from "@/model"
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import OrderInfo from "./OrderInfo"
 import OrderListItem from "./OrderListItem"
-import { useOrdersStore } from "./store"
+import { useOrdersStore, fetchProductsByOrderId } from "./store"
+import { useExpandedOrder } from "./useExpandedOrder"
 
 const OrderList = () => {
     const orders = useOrdersStore((store) => store.orders)
-    const expandedOrder = useOrdersStore((store) => store.expandedOrder)
+    const expandedOrder = useExpandedOrder()
 
     const { data: products } = useQuery({
-        queryKey: ["product", expandedOrder],
-        queryFn: () => fetchProduct(expandedOrder!.id),
-        enabled: expandedOrder !== null,
+        queryKey: ["orderProducts", expandedOrder?.id],
+        queryFn: () => fetchProductsByOrderId(expandedOrder!.id),
+        enabled: expandedOrder?.id !== undefined,
     })
 
     const firstColumnSizeClasses =
-        expandedOrder === null ? "grow" : "basis-3/4 grow-0"
+        expandedOrder?.id === undefined ? "grow" : "basis-3/4 grow-0"
 
     return (
         <div className="flex">
@@ -26,7 +25,7 @@ const OrderList = () => {
                         orderIndex={index}
                         key={order.id}
                         isCurrent={order.id === expandedOrder?.id}
-                        isExpanded={expandedOrder !== null}
+                        isExpanded={expandedOrder?.id !== undefined}
                     />
                 ))}
             </div>
@@ -36,10 +35,3 @@ const OrderList = () => {
 }
 
 export default OrderList
-
-const fetchProduct = async (id: number): Promise<Product[]> => {
-    const response = await fetch(`/api/order/${id}/products`)
-    const product = await response.json()
-
-    return product
-}

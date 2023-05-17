@@ -2,13 +2,17 @@ import { Product } from "@/model"
 import TrashIcon from "../common/TrashIcon"
 import AddIcon from "../common/AddIcon"
 import { useOrdersStore } from "./store"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useExpandedOrder } from "./useExpandedOrder"
 
 interface OrderInfoProps {
     products: Product[]
 }
 
 const OrderInfo = ({ products }: OrderInfoProps) => {
-    const orderTitle = useOrdersStore((store) => store.expandedOrder!.title)
+    const orderTitle = useOrdersStore((store) => {
+        return store.orders[store.expandedOrderIndex!].title
+    })
 
     // See TODO
     // const closeOrder = useOrdersStore(store => store.closeCurrentOrder)
@@ -50,43 +54,35 @@ const AddProduct = () => {
     )
 }
 
-const ProductItem = ({
-    title,
-    serialNumber,
-    availability,
-    imageUrl,
-}: Product) => {
-    const deleteOrder = () => {}
+const ProductItem = (product: Product) => {
+    const queryClient = useQueryClient()
+
+    const removeProduct = useOrdersStore((store) => store.removeProduct)
+    const expandedOrder = useExpandedOrder()
+
+    const deleteProduct = useMutation({
+        mutationKey: ["product", product],
+        mutationFn: () => removeProduct(product),
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["orderProducts", expandedOrder!.id],
+            })
+        },
+    })
 
     const image = (
         // eslint-disable-next-line
-        <img src={imageUrl} alt="" />
+        <img src={product.imageUrl} alt="" />
     )
 
-    const Dot = () => {
-        return (
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                className="w-6 h-6 stroke-[#cddc39] fill-[#cddc39]">
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5.25 7.5A2.25 2.25 0 017.5 5.25h9a2.25 2.25 0 012.25 2.25v9a2.25 2.25 0 01-2.25 2.25h-9a2.25 2.25 0 01-2.25-2.25v-9z"
-                />
-            </svg>
-        )
-    }
-
     const availabilityStyles =
-        availability === "Available"
+        product.availability === "Available"
             ? "text-green-500 text-sm"
             : "text-red-500 text-sm"
 
     const availabilityText =
-        availability === "Available" ? "Available" : "In maintenance"
+        product.availability === "Available" ? "Available" : "In maintenance"
 
     return (
         <div className="flex items-center justify-between">
@@ -95,17 +91,34 @@ const ProductItem = ({
                 <div className="h-10 w-10">{image}</div>
                 <div className="text-sm">
                     <p className="text-[#2e3e45] underline decoration-[#dcdedf] decoration-2">
-                        {title}
+                        {product.title}
                     </p>
-                    <p className="text-[#93a6b0]">{serialNumber}</p>
+                    <p className="text-[#93a6b0]">{product.serialNumber}</p>
                 </div>
             </div>
 
             <p className={availabilityStyles}>{availabilityText}</p>
 
-            <div className="flex justify-around" onClick={deleteOrder}>
-                <TrashIcon onClick={() => {}} />
+            <div className="flex justify-around">
+                <TrashIcon onClick={deleteProduct.mutate} />
             </div>
         </div>
+    )
+}
+
+const Dot = () => {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            className="w-6 h-6 stroke-[#cddc39] fill-[#cddc39]">
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5.25 7.5A2.25 2.25 0 017.5 5.25h9a2.25 2.25 0 012.25 2.25v9a2.25 2.25 0 01-2.25 2.25h-9a2.25 2.25 0 01-2.25-2.25v-9z"
+            />
+        </svg>
     )
 }

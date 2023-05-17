@@ -1,9 +1,8 @@
 import AddIcon from "@/components/common/AddIcon"
 import OrderList from "@/components/order/OrderList"
 import { Order } from "@/model"
+import { useEffect } from "react"
 import { useOrdersStore } from "./store"
-import { useMutation } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
 
 export interface OrderPageProps {
     initialOrders: Order[]

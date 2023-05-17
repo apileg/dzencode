@@ -51,13 +51,17 @@ const Expanded = ({ orderIndex, arrowShown }: ExpandedProps) => {
             <ClientSide>
                 <DataAndTime createdAt={createdAt} />
             </ClientSide>
-            {arrowShown && <Arrow />}
+            <Arrow shown={arrowShown} />
         </>
     )
 }
 
-const Arrow = () => {
-    return <div className="h-full flex text-xl text-[#cddc39]">{">"}</div>
+const Arrow = ({ shown }: { shown: boolean }) => {
+    return (
+        <div className="h-full flex text-xl text-[#cddc39] min-w-[15px]">
+            {shown ? ">" : ""}
+        </div>
+    )
 }
 
 interface CollapsedProps {

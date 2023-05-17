@@ -1,20 +1,22 @@
-import { Order } from "@/model"
+import { Order, Product } from "@/model"
 import { create } from "zustand"
 
 export interface OrdersStore {
     orders: Order[]
-    expandedOrder: Order | null
+    expandedOrderIndex: number | null
 
     hydrate(orders: Order[]): void
     removeOrderAt(orderIndex: number): void
 
     clickOnOrderAt(orderIndex: number): void
     closeCurrentOrder(): void
+
+    removeProduct(product: Product): void
 }
 
 export const useOrdersStore = create<OrdersStore>((set, get) => ({
-    orders: [] as Order[],
-    expandedOrder: null,
+    orders: [],
+    expandedOrderIndex: null,
 
     hydrate: (orders) => set((_state) => ({ orders })),
 
@@ -28,21 +30,52 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
     },
 
     clickOnOrderAt: (orderIndex: number) => {
-        const order = get().orders[orderIndex]
+        const previousExpandedIndex = get().expandedOrderIndex
 
-        const previouslyExpanded = get().expandedOrder
-        const newExpanded = previouslyExpanded?.id === order.id ? null : order
+        if (previousExpandedIndex === orderIndex) {
+            set(() => ({
+                expandedOrderIndex: null,
+            }))
 
-        set((state) => ({
-            orders: state.orders,
-            expandedOrder: newExpanded,
+            return
+        }
+
+        set(() => ({
+            expandedOrderIndex: orderIndex,
         }))
     },
 
     closeCurrentOrder: () => {
+        set(() => ({
+            expandedOrderIndex: null,
+        }))
+    },
+
+    removeProduct: async (product: Product) => {
+        await fetch(`/api/product/${product.id}`, { method: "DELETE" })
+
         set((state) => ({
-            orders: state.orders,
-            expandedOrder: null,
+            orders: state.orders.map((order, index) => {
+                if (index !== state.expandedOrderIndex) {
+                    return order
+                }
+
+                return {
+                    ...order,
+                    totalUsd: order.totalUsd - product.priceUsd,
+                    totalUah: order.totalUah - product.priceUah,
+                    productsCount: order.productsCount - 1,
+                }
+            }),
         }))
     },
 }))
+
+export const fetchProductsByOrderId = async (
+    orderId: number
+): Promise<Product[]> => {
+    const response = await fetch(`/api/order/${orderId}/products`)
+    const products = await response.json()
+
+    return products
+}
