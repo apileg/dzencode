@@ -35,7 +35,7 @@ model ProductEntity {
   customerFullName String
 
   orderId Int
-  order OrderEntity @relation(fields: [orderId], references: [id])
+  order OrderEntity @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 enum ProductAvailabilityEnum {

@@ -1,8 +1,6 @@
-import { prisma } from "@/db"
+import { prisma } from "@/prisma"
 import { NextApiHandler } from "next"
-import { z } from "zod"
-
-const idZod = z.number().int().positive()
+import { parseId } from "../../_parseId"
 
 const handler: NextApiHandler = async (req, res) => {
     try {
@@ -11,12 +9,9 @@ const handler: NextApiHandler = async (req, res) => {
             return
         }
 
-        const idString = req.query.id
-        let id
+        const id = parseId(req)
 
-        try {
-            id = idZod.parse(Number(idString))
-        } catch {
+        if (id === null) {
             res.status(404)
             return
         }

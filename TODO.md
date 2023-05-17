@@ -13,4 +13,7 @@
     -   Table
     -   Filtering
     -   Deletion
+    -   Adding
 -   Pack all this into Docker
+-   Unit test API
+-   Unit test hook for /products
