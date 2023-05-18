@@ -1,11 +1,11 @@
 import { Product } from "@/model"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import AddIcon from "../common/AddIcon"
+import AddIcon from "../common/icons/AddIcon"
 import Availability from "../common/Availability"
-import Dot from "../common/DotIcon"
-import TrashIcon from "../common/TrashIcon"
 import { useOrdersStore } from "./store"
 import { useExpandedOrder } from "./useExpandedOrder"
+import Dot from "../common/icons/DotIcon"
+import TrashIcon from "../common/icons/TrashIcon"
 
 interface OrderInfoProps {
     products: Product[]

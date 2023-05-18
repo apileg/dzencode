@@ -1,4 +1,4 @@
-import AddIcon from "@/components/common/AddIcon"
+import AddIcon from "@/components/common/icons/AddIcon"
 import OrderList from "@/components/order/OrderList"
 import { Order } from "@/model"
 import { useEffect } from "react"

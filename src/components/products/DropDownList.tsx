@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { unique } from "../common/utils"
 import { useProductsStore } from "./store"
 
 const DropDownList = () => {

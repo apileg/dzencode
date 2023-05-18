@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query"
 import { useOrdersStore } from "./store"
-import TrashIcon from "../common/TrashIcon"
 import ClientSide from "../common/ClientSide"
 import Prices from "../common/Prices"
 import Dates from "../common/Dates"
+import TrashIcon from "../common/icons/TrashIcon"
 
 interface OrderListItemProps {
     orderIndex: number

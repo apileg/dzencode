@@ -3,14 +3,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import Availability from "../common/Availability"
 import ClientSide from "../common/ClientSide"
 import Dates from "../common/Dates"
-import Dot from "../common/DotIcon"
 import Prices from "../common/Prices"
-import TrashIcon from "../common/TrashIcon"
 import DropDownList from "./DropDownList"
 import styles from "./ProductsPage.module.css"
 import { fetchProductsWithType, useProductsStore } from "./store"
 import { useEffect } from "react"
 import { fetchTypes } from "./store"
+import Dot from "../common/icons/DotIcon"
+import TrashIcon from "../common/icons/TrashIcon"
 
 export interface ProductsPageProps {
     initialProducts: Product[]
