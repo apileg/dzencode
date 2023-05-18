@@ -16,6 +16,7 @@ const handler: NextApiHandler = async (req, res) => {
             return
         }
 
+        // Query 4
         const products = await prisma.productEntity.findMany({
             where: {
                 orderId: id,

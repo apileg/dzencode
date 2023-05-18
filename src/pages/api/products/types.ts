@@ -1,5 +1,6 @@
 import { NextApiHandler } from "next"
 import { prisma } from "@/prisma"
+import { getProductTypes } from "@/dal/getProductTypes"
 
 const handler: NextApiHandler = async (req, res) => {
     try {
@@ -8,15 +9,7 @@ const handler: NextApiHandler = async (req, res) => {
             return
         }
 
-        const rows = await prisma.productEntity.findMany({
-            select: {
-                type: true,
-            },
-
-            distinct: ["type"],
-        })
-
-        const types = rows.map((t) => t.type)
+        const types = await getProductTypes()
         res.json(types)
     } finally {
         res.end()

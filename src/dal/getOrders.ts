@@ -2,6 +2,7 @@ import { Order } from "@/model"
 import { prisma } from "@/prisma"
 
 export async function getOrders(): Promise<Order[]> {
+    // Query 1
     const entities = (await prisma.$queryRaw`
         select
             o.id,
