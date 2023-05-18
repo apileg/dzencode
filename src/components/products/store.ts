@@ -4,14 +4,20 @@ import { create } from "zustand"
 export interface ProductsStore {
     products: Product[]
     currentType: string | null
+    types: string[]
 
     updateProducts(products: Product[]): void
     removeProductAt(productIndex: number): void
+
+    setCurrentType(value: string | null): void
+
+    updateTypes(types: string[]): void
 }
 
 export const useProductsStore = create<ProductsStore>((set, get) => ({
     products: [],
     currentType: null,
+    types: [],
 
     updateProducts: (products) => set(() => ({ products })),
 
@@ -30,6 +36,16 @@ export const useProductsStore = create<ProductsStore>((set, get) => ({
         set((state) => ({
             products: state.products.filter((_, i) => i !== productIndex),
         }))
+    },
+
+    setCurrentType: (value) => {
+        set(() => ({
+            currentType: value,
+        }))
+    },
+
+    updateTypes: (types) => {
+        set(() => ({ types }))
     },
 }))
 
@@ -63,4 +79,11 @@ export async function fetchProductsWithType(
     const products = await response.json()
 
     return products
+}
+
+export async function fetchTypes(): Promise<string[]> {
+    const response = await fetch("/api/products/types")
+    const types = response.json()
+
+    return types
 }

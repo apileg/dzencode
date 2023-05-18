@@ -1,35 +1,57 @@
 import { Product } from "@/model"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import Availability from "../common/Availability"
 import ClientSide from "../common/ClientSide"
 import Dates from "../common/Dates"
 import Dot from "../common/DotIcon"
 import Prices from "../common/Prices"
 import TrashIcon from "../common/TrashIcon"
-import DropDownMenu from "./DropDownMenu"
+import DropDownList from "./DropDownList"
 import styles from "./ProductsPage.module.css"
 import { fetchProductsWithType, useProductsStore } from "./store"
 import { useEffect } from "react"
+import { fetchTypes } from "./store"
 
 export interface ProductsPageProps {
     initialProducts: Product[]
+    initialTypes: string[]
 }
 
-const ProductsPage = ({ initialProducts }: ProductsPageProps) => {
+const ProductsPage = ({ initialProducts, initialTypes }: ProductsPageProps) => {
     const updateProducts = useProductsStore((store) => store.updateProducts)
-    const currentType = useProductsStore((store) => store.currentType)
+    const updateTypes = useProductsStore((store) => store.updateTypes)
 
-    const { data } = useQuery({
-        queryKey: ["productsWithType"],
+    const currentType = useProductsStore((store) => store.currentType)
+    const queryClient = useQueryClient()
+
+    const { data: fetchedProducts } = useQuery({
+        queryKey: ["productsWithType", currentType],
+
         queryFn: () => fetchProductsWithType(currentType),
         initialData: initialProducts,
+
+        onSuccess: () => {
+            queryClient.invalidateQueries(["types"])
+        },
+    })
+
+    const { data: fetchedTypes } = useQuery({
+        queryKey: ["types"],
+        queryFn: fetchTypes,
+        initialData: initialTypes,
     })
 
     useEffect(() => {
-        if (data !== undefined) {
-            updateProducts(data)
+        if (fetchedProducts !== undefined) {
+            updateProducts(fetchedProducts)
         }
-    }, [data])
+    }, [fetchedProducts])
+
+    useEffect(() => {
+        if (fetchedTypes !== undefined) {
+            updateTypes(fetchedTypes)
+        }
+    }, [fetchedTypes])
 
     return (
         <div className="w-full h-full p-20">
@@ -63,7 +85,7 @@ const ProductsFilter = () => {
         <div className="flex gap-5">
             <div className="flex items-center">
                 <p className="text-[#859ca7] text-sm">Type:</p>
-                <DropDownMenu />
+                <DropDownList />
             </div>
         </div>
     )

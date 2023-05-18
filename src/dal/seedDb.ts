@@ -1,8 +1,8 @@
 import { ProductEntity } from "@prisma/client"
 import { prisma } from "@/prisma"
-import { Product } from "./../model"
-import { products } from "./products"
-import { orders } from "./orders"
+import { Product } from "@/model"
+import { products } from "@/mock-data/products"
+import { orders } from "@/mock-data/orders"
 
 async function seedOrdersAndProducts() {
     prisma.$transaction(async (tx) => {
