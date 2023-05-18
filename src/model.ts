@@ -15,8 +15,7 @@ export interface Order {
 
 export interface SlimOrder {
     title: string
-    guaranteeStart: Timestamp
-    guaranteeEnd: Timestamp
+    createdAt: Timestamp
 }
 
 export interface SlimProduct {
@@ -25,6 +24,8 @@ export interface SlimProduct {
     serialNumber: string
     availability: ProductAvailabilityEnum
 }
+
+export type ProductType = string
 
 export interface Product {
     id: number
@@ -35,7 +36,7 @@ export interface Product {
     usedOrNew: UsedOrNewEnum
 
     imageUrl: string
-    type: string
+    type: ProductType
 
     guaranteeEnd: Timestamp
 

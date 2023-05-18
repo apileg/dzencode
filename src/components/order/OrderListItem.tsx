@@ -1,7 +1,9 @@
-import ClientSide from "@/components/ClientSide"
 import { useMutation } from "@tanstack/react-query"
 import { useOrdersStore } from "./store"
 import TrashIcon from "../common/TrashIcon"
+import ClientSide from "../common/ClientSide"
+import Prices from "../common/Prices"
+import Dates from "../common/Dates"
 
 interface OrderListItemProps {
     orderIndex: number
@@ -50,7 +52,7 @@ const Expanded = ({ orderIndex, arrowShown }: ExpandedProps) => {
                 productsCount={productsCount}
             />
             <ClientSide>
-                <DataAndTime createdAt={createdAt} />
+                <Dates timestamp={createdAt} />
             </ClientSide>
             <Arrow shown={arrowShown} />
         </>
@@ -70,14 +72,14 @@ interface CollapsedProps {
 }
 
 const Collapsed = ({ orderIndex }: CollapsedProps) => {
-    const { title, productsCount, createdAt, totalUah, totalUsd } =
+    const { id, title, productsCount, createdAt, totalUah, totalUsd } =
         useOrdersStore((store) => store.orders[orderIndex])
 
-    const removeOrderAt = useOrdersStore((store) => store.removeOrderAt)
+    const removeOrderWithId = useOrdersStore((store) => store.removeOrderById)
 
     const removeMutation = useMutation({
-        mutationKey: ["order", orderIndex],
-        mutationFn: () => removeOrderAt(orderIndex),
+        mutationKey: ["removeOrder", id],
+        mutationFn: () => removeOrderWithId(id),
     })
 
     return (
@@ -88,7 +90,7 @@ const Collapsed = ({ orderIndex }: CollapsedProps) => {
                 productsCount={productsCount}
             />
             <ClientSide>
-                <DataAndTime createdAt={createdAt} />
+                <Dates timestamp={createdAt} />
             </ClientSide>
             <Prices priceUsd={totalUsd} priceUah={totalUah} />
             <TrashIcon onClick={removeMutation.mutate} />
@@ -128,55 +130,6 @@ const ProductCount = ({ orderIndex, productsCount }: ProductCountProps) => {
                 <h1 className="text-lg">{productsCount}</h1>
                 <p className="text-xs text-[#9fb0b7]">Products</p>
             </div>
-        </div>
-    )
-}
-
-const DataAndTime = ({ createdAt }: { createdAt: number }) => {
-    const createdAtDate = new Date(createdAt * 1000)
-
-    const locale = [navigator.language]
-
-    const formattedDayMonthYear = new Intl.DateTimeFormat(locale, {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-    }).format(createdAtDate)
-
-    const formattedMonthYear = new Intl.DateTimeFormat(locale, {
-        month: "numeric",
-        year: "numeric",
-    }).format(createdAtDate)
-
-    return (
-        <div className="flex flex-col items-center tracking-wide">
-            <p className="text-xs text-[#9fb0b7]">{formattedMonthYear}</p>
-            <p>{formattedDayMonthYear.split(" ").join(" / ")}</p>
-        </div>
-    )
-}
-
-const Prices = ({
-    priceUsd,
-    priceUah,
-}: {
-    priceUsd: number
-    priceUah: number
-}) => {
-    const inUsd = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-    }).format(priceUsd)
-
-    const inUah = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "UAH",
-    }).format(priceUah)
-
-    return (
-        <div className="flex flex-col items-start tracking-wide">
-            <p className="text-xs text-[#9fb0b7]">{inUsd}</p>
-            <p>{inUah}</p>
         </div>
     )
 }

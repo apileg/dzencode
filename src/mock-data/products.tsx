@@ -19,7 +19,7 @@ export const products: Product[] = [
         order: {
             title: "Order 1",
             guaranteeStart: 1621296000000,
-            guaranteeEnd: 1652832000000,
+            createdAt: 1652832000000,
         },
     },
 
@@ -39,7 +39,7 @@ export const products: Product[] = [
         order: {
             title: "Order 2",
             guaranteeStart: 1621296000000,
-            guaranteeEnd: 1652832000000,
+            createdAt: 1652832000000,
         },
     },
     {
@@ -58,7 +58,7 @@ export const products: Product[] = [
         order: {
             title: "Order 3",
             guaranteeStart: 1621296000000,
-            guaranteeEnd: 1652832000000,
+            createdAt: 1652832000000,
         },
     },
 
@@ -78,7 +78,7 @@ export const products: Product[] = [
         order: {
             title: "Order 4",
             guaranteeStart: 1621296000000,
-            guaranteeEnd: 1652832000000,
+            createdAt: 1652832000000,
         },
     },
 
@@ -98,7 +98,7 @@ export const products: Product[] = [
         order: {
             title: "Order 5",
             guaranteeStart: 1621296000000,
-            guaranteeEnd: 1652832000000,
+            createdAt: 1652832000000,
         },
     },
 ]

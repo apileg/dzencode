@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Socket, io } from "socket.io-client"
-import ClientSide from "../ClientSide"
+import ClientSide from "../common/ClientSide"
 
 const TopPanel = () => {
     return (

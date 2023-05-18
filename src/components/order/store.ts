@@ -6,7 +6,7 @@ export interface OrdersStore {
     expandedOrderIndex: number | null
 
     hydrate(orders: Order[]): void
-    removeOrderAt(orderIndex: number): void
+    removeOrderById(orderId: number): void
 
     clickOnOrderAt(orderIndex: number): void
     closeCurrentOrder(): void
@@ -18,14 +18,13 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
     orders: [],
     expandedOrderIndex: null,
 
-    hydrate: (orders) => set((_state) => ({ orders })),
+    hydrate: (orders) => set(() => ({ orders })),
 
-    removeOrderAt: async (orderIndex) => {
-        const order = get().orders[orderIndex]
-        await fetch(`/api/order/${order.id}`, { method: "DELETE" })
+    removeOrderById: async (orderId) => {
+        await fetch(`/api/order/${orderId}`, { method: "DELETE" })
 
         set((state) => ({
-            orders: state.orders.filter((_, i) => i !== orderIndex),
+            orders: state.orders.filter((o) => o.id !== orderId),
         }))
     },
 

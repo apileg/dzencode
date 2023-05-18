@@ -3,7 +3,7 @@ import { Order } from "@/model"
 export const orders: Order[] = [
     {
         id: 1,
-        title: "Order 1",
+        title: "Order buffalo buffalo buffalo buffalo buffalo buffalo buffalo buffalo buffalo buffalo buffalo buffalo buffalo",
         createdAt: 1652116800,
         productsCount: 3,
         totalUsd: 45.99,
