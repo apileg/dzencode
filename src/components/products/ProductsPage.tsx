@@ -91,11 +91,11 @@ interface ProductsRowProps {
 }
 
 const ProductsRow = ({ product, index }: ProductsRowProps) => {
-    const deleteProduct = useProductsStore((store) => store.deleteProduct)
+    const removeProductAt = useProductsStore((store) => store.removeProductAt)
 
     const removeMutation = useMutation({
-        mutationKey: ["removeProduct", product.id],
-        mutationFn: () => deleteProduct(product.id),
+        mutationKey: ["removeProduct", index],
+        mutationFn: () => removeProductAt(index),
     })
 
     const stroke = index % 2 === 0 ? "stroke-[#cddc39]" : "stroke-[#2c3c44]"
