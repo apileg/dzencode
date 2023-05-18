@@ -112,7 +112,7 @@ const ProductsRow = ({ product, index }: ProductsRowProps) => {
                 <Availability value={product.availability} />
             </td>
             <td>
-                <div className="flex flex-col">
+                <div className="flex flex-col items-center">
                     <ClientSide>
                         <GuaranteeFromTo timestamp={product.guaranteeEnd} />
                     </ClientSide>
@@ -161,15 +161,15 @@ const GuaranteeFromTo = ({ timestamp }: { timestamp: number }) => {
         year: "numeric",
     }).format(createdAtDate)
 
-    const htmlFormat = formattedDayMonthYear.split("/").join(" / ")
+    const htmlFormat = formattedDayMonthYear
 
     return (
         <>
-            <div className="flex gap-3 text-[#93a6b0] items-center">
+            <div className="flex gap-3 text-[#93a6b0] items-start">
                 <p className="text-sm">from:</p>
                 <p className="text-[#2e3e45] text-sm">{htmlFormat}</p>
             </div>
-            <div className="flex gap-3 text-[#93a6b0] items-center">
+            <div className="flex gap-3 text-[#93a6b0] items-start">
                 <p className="text-sm">to:</p>
                 <p className="text-[#2e3e45] text-sm">{htmlFormat}</p>
             </div>
