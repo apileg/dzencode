@@ -18,7 +18,6 @@ export const products: Product[] = [
         customerFullName: "John Doe",
         order: {
             title: "Order 1",
-            guaranteeStart: 1621296000000,
             createdAt: 1652832000000,
         },
     },
@@ -38,7 +37,6 @@ export const products: Product[] = [
         customerFullName: "Jane Smith",
         order: {
             title: "Order 2",
-            guaranteeStart: 1621296000000,
             createdAt: 1652832000000,
         },
     },
@@ -57,7 +55,6 @@ export const products: Product[] = [
         customerFullName: "Bob Johnson",
         order: {
             title: "Order 3",
-            guaranteeStart: 1621296000000,
             createdAt: 1652832000000,
         },
     },
@@ -77,7 +74,6 @@ export const products: Product[] = [
         customerFullName: "Alice Brown",
         order: {
             title: "Order 4",
-            guaranteeStart: 1621296000000,
             createdAt: 1652832000000,
         },
     },
@@ -97,7 +93,6 @@ export const products: Product[] = [
         customerFullName: "David Lee",
         order: {
             title: "Order 5",
-            guaranteeStart: 1621296000000,
             createdAt: 1652832000000,
         },
     },

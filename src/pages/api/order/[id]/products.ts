@@ -1,6 +1,6 @@
 import { prisma } from "@/prisma"
 import { NextApiHandler } from "next"
-import { parseId } from "../../_parseId"
+import { parseId } from "../../_utils/parseId"
 
 const handler: NextApiHandler = async (req, res) => {
     try {

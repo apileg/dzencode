@@ -1,6 +1,7 @@
 import { prisma } from "@/prisma"
 import { NextApiHandler } from "next"
-import { parseId } from "../_parseId"
+import { parseId } from "../_utils/parseId"
+import { performDelete } from "../_utils/performDelete"
 
 const handler: NextApiHandler = async (req, res) => {
     try {
@@ -16,8 +17,9 @@ const handler: NextApiHandler = async (req, res) => {
             return
         }
 
-        await prisma.orderEntity.delete({ where: { id } })
-        res.status(200)
+        await performDelete(res, () =>
+            prisma.orderEntity.delete({ where: { id } })
+        )
     } finally {
         res.end()
     }
