@@ -1,5 +1,5 @@
 import { Product } from "@/model"
-import { useEffect } from "react"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import Availability from "../common/Availability"
 import ClientSide from "../common/ClientSide"
 import Dates from "../common/Dates"
@@ -8,19 +8,28 @@ import Prices from "../common/Prices"
 import TrashIcon from "../common/TrashIcon"
 import DropDownMenu from "./DropDownMenu"
 import styles from "./ProductsPage.module.css"
-import { useProductsStore } from "./store"
-import { useMutation } from "@tanstack/react-query"
+import { fetchProductsWithType, useProductsStore } from "./store"
+import { useEffect } from "react"
 
 export interface ProductsPageProps {
     initialProducts: Product[]
 }
 
 const ProductsPage = ({ initialProducts }: ProductsPageProps) => {
-    const hydrate = useProductsStore((store) => store.hydrate)
+    const updateProducts = useProductsStore((store) => store.updateProducts)
+    const currentType = useProductsStore((store) => store.currentType)
+
+    const { data } = useQuery({
+        queryKey: ["productsWithType"],
+        queryFn: () => fetchProductsWithType(currentType),
+        initialData: initialProducts,
+    })
 
     useEffect(() => {
-        hydrate(initialProducts)
-    }, [])
+        if (data !== undefined) {
+            updateProducts(data)
+        }
+    }, [data])
 
     return (
         <div className="w-full h-full p-20">
@@ -103,10 +112,14 @@ const ProductsRow = ({ product, index }: ProductsRowProps) => {
                 </div>
             </td>
             <td>
-                <p className="text-[#2e3e45] underline decoration-[#dcdedf] decoration-2">
-                    {product.title}
-                </p>
-                <p className="text-[#93a6b0] text-sm">{product.serialNumber}</p>
+                <div className="flex flex-col items-start">
+                    <p className="text-[#2e3e45] underline decoration-[#dcdedf] decoration-2">
+                        {product.title}
+                    </p>
+                    <p className="text-[#93a6b0] text-sm">
+                        {product.serialNumber}
+                    </p>
+                </div>
             </td>
             <td>
                 <Availability value={product.availability} />

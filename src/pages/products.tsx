@@ -2,7 +2,7 @@ import ProductsPage, {
     ProductsPageProps,
 } from "@/components/products/ProductsPage"
 
-import { prisma } from "@/prisma"
+import { getProducts } from "@/dal/getProducts"
 import { GetServerSideProps } from "next"
 
 export default function Home(props: ProductsPageProps) {
@@ -12,15 +12,11 @@ export default function Home(props: ProductsPageProps) {
 export const getServerSideProps: GetServerSideProps<
     ProductsPageProps
 > = async () => {
-    const entities = await prisma.productEntity.findMany({
-        include: {
-            order: true,
-        },
-    })
+    const products = await getProducts({})
 
     return {
         props: {
-            initialProducts: entities,
+            initialProducts: products,
         },
     }
 }

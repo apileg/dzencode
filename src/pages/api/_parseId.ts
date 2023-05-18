@@ -1,5 +1,4 @@
-import { prisma } from "@/prisma"
-import { NextApiHandler, NextApiRequest } from "next"
+import { NextApiRequest } from "next"
 import { z } from "zod"
 
 const idZod = z.number().int().positive()

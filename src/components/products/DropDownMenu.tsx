@@ -1,6 +1,11 @@
 import { useState } from "react"
+import { useProductsStore } from "./store"
+import { unique } from "../common/utils"
 
-const DropDownMenu = () => {
+const DropDownMenu = ({ values }: { values: string[] }) => {
+    const products = useProductsStore((store) => store.products)
+    //const types = unique(products.map((p) => p.type))
+
     const [isOpen, setIsOpen] = useState(false)
 
     const toggleMenu = () => {
@@ -49,22 +54,6 @@ const DropDownMenu = () => {
                                     htmlFor="checkbox-item-1"
                                     className="ml-2 text-sm font-medium text-black">
                                     Default checkbox
-                                </label>
-                            </div>
-                        </li>
-                        <li>
-                            <div className="flex items-center">
-                                <input
-                                    checked
-                                    id="checkbox-item-2"
-                                    type="checkbox"
-                                    value=""
-                                    className="w-4 h-4 outline-none text-blue-600 bg-gray-100 border-gray-300 rounded  dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                                />
-                                <label
-                                    htmlFor="checkbox-item-2"
-                                    className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                    Very very very lorem
                                 </label>
                             </div>
                         </li>
