@@ -9,13 +9,6 @@
 
 # NEXT:
 
--   Delete orders and products with model window in /orders
--   Add OrderInfo relative close button
--   /products page:
-    -   Table
-    -   Filtering
-    -   Deletion
-    -   Adding
 -   Pack all this into Docker
 -   Unit test API
 -   Unit test hook for /products

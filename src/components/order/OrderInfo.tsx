@@ -22,7 +22,7 @@ const OrderInfo = ({ products }: OrderInfoProps) => {
         <div className="w-full h-full border-2 solid rounded-md p-3 m-3">
             <button
                 type="button"
-                className="relative -top-8 left-[53.5rem] border-2 solid drop-shadow-xl bg-white rounded-full text-gray-400 bg-transparent text-sm p-1.5 ml-auto inline-flex items-center ">
+                className="absolute top-[14.6rem] right-[4.6rem] border-2 solid drop-shadow-xl bg-white rounded-full text-gray-400 bg-transparent text-sm p-1.5 ml-auto inline-flex items-center ">
                 <svg
                     className="w-5 h-5"
                     fill="currentColor"
