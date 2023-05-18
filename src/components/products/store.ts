@@ -25,7 +25,13 @@ export const useProductsStore = create<ProductsStore>((set, get) => ({
         const store = get()
         const product = store.products[productIndex]
 
-        await fetch(`/api/product/${product.id}`, { method: "DELETE" })
+        const response = await fetch(`/api/product/${product.id}`, {
+            method: "DELETE",
+        })
+
+        if (!response.ok) {
+            return
+        }
 
         if (shouldResetCurrentTypeAfterDelete(store, productIndex)) {
             set(() => ({

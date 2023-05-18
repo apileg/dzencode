@@ -63,13 +63,13 @@ const ProductItem = (product: Product) => {
     const expandedOrder = useExpandedOrder()
 
     const deleteProduct = useMutation({
+        //@ts-expect-error it's OK
         mutationKey: ["removeProductInOrder", product.id],
+
         mutationFn: () => removeProduct(product),
 
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["orderProducts", expandedOrder!.id],
-            })
+            queryClient.invalidateQueries(["orderProducts", expandedOrder!.id])
         },
     })
 

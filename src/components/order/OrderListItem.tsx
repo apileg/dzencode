@@ -78,20 +78,14 @@ const Collapsed = ({ orderIndex }: CollapsedProps) => {
     const removeOrderWithId = useOrdersStore((store) => store.removeOrderById)
 
     const removeMutation = useMutation({
+        //@ts-expect-error it's OK
         mutationKey: ["removeOrder", id],
         mutationFn: () => removeOrderWithId(id),
     })
 
     return (
         <>
-            <h1
-                className={`
-                underline 
-                tracking-widest 
-                w-20 
-                truncate
-                max-h-[3em]
-            `}>
+            <h1 className="underline tracking-widest w-20 max-h-[3em] text-ellipsis line-clamp-3">
                 {title}
             </h1>
             <ProductCount

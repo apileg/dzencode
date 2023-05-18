@@ -116,6 +116,7 @@ const ProductsRow = ({ product, index }: ProductsRowProps) => {
     const removeProductAt = useProductsStore((store) => store.removeProductAt)
 
     const removeMutation = useMutation({
+        //@ts-expect-error it's OK
         mutationKey: ["removeProduct", index],
         mutationFn: () => removeProductAt(index),
     })

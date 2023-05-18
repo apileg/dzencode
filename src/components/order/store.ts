@@ -21,7 +21,13 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
     hydrate: (orders) => set(() => ({ orders })),
 
     removeOrderById: async (orderId) => {
-        await fetch(`/api/order/${orderId}`, { method: "DELETE" })
+        const response = await fetch(`/api/order/${orderId}`, {
+            method: "DELETE",
+        })
+
+        if (!response.ok) {
+            return
+        }
 
         set((state) => ({
             orders: state.orders.filter((o) => o.id !== orderId),
@@ -51,7 +57,13 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
     },
 
     removeProduct: async (product: Product) => {
-        await fetch(`/api/product/${product.id}`, { method: "DELETE" })
+        const response = await fetch(`/api/product/${product.id}`, {
+            method: "DELETE",
+        })
+
+        if (!response.ok) {
+            return
+        }
 
         set((state) => ({
             orders: state.orders.map((order, index) => {
