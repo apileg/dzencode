@@ -7,12 +7,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model UserEntity {
+  id Int @id @default(autoincrement())
+
+  email String @unique
+  passwordHash String
+
+  avatarUrl String
+
+  orders OrderEntity[]
+}
+
 model OrderEntity {
   id    Int    @id @default(autoincrement())
   title String
   createdAt Int @db.Int
 
   products ProductEntity[]
+
+  userId Int
+  user UserEntity @relation(fields: [userId], references: [id])
 }
 
 model ProductEntity {

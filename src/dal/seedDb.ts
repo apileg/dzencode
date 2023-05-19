@@ -1,14 +1,25 @@
-import { ProductEntity } from "@prisma/client"
-import { prisma } from "@/prisma"
-import { Product } from "@/model"
-import { products } from "@/mock-data/products"
 import { orders } from "@/mock-data/orders"
+import { products } from "@/mock-data/products"
+import { Product } from "@/model"
+import { prisma } from "@/prisma"
+import { ProductEntity } from "@prisma/client"
+import { floatToCents } from "@/bll/money-conversion"
+import { hashPassword } from "@/bll/hashPassword"
 
 async function seedOrdersAndProducts() {
     prisma.$transaction(async (tx) => {
+        const { id: userId } = await tx.userEntity.create({
+            data: {
+                avatarUrl: "/photos/takanaka.jpeg",
+                email: "takanaka@seychelles.com",
+                passwordHash: await hashPassword("takanaka"),
+            },
+        })
+
         for (const order of orders) {
-            const { id } = await tx.orderEntity.create({
+            const { id: orderId } = await tx.orderEntity.create({
                 data: {
+                    userId,
                     title: order.title,
                     createdAt: order.createdAt,
                 },
@@ -16,7 +27,7 @@ async function seedOrdersAndProducts() {
 
             for (const product of products) {
                 await tx.productEntity.create({
-                    data: productModelToCreateFields(product, id),
+                    data: productModelToCreateFields(product, orderId),
                 })
             }
         }
@@ -37,10 +48,6 @@ function productModelToCreateFields(
     obj.priceUah = floatToCents(model.priceUah)
 
     return obj
-}
-
-function floatToCents(n: number) {
-    return Math.floor(n * 100)
 }
 
 seedOrdersAndProducts()

@@ -1,3 +1,5 @@
+import { centsToFloat } from "@/bll/money-conversion"
+
 const Prices = ({
     priceUsd,
     priceUah,
@@ -5,8 +7,8 @@ const Prices = ({
     priceUsd: number
     priceUah: number
 }) => {
-    const usd = Math.round(priceUsd / 100)
-    const uah = Math.round(priceUah / 100)
+    const usd = centsToFloat(priceUsd)
+    const uah = centsToFloat(priceUah)
 
     const inUsd = new Intl.NumberFormat("en-US", {
         style: "currency",
