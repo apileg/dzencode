@@ -1,14 +1,38 @@
-import { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
+import { formCookie, sign } from "@/bll/jwt"
+import { tryLogin } from "@/dal/tryLogin"
+import { NextApiHandler, NextApiRequest } from "next"
 import { z, ZodError } from "zod"
 
 const handler: NextApiHandler = async (req, res) => {
     try {
-        switch (req.method) {
-            case "POST":
-                return await postAuth(req, res)
+        if (req.method !== "POST") {
+            res.status(404)
+            return
+        }
 
-            default:
-                res.status(404)
+        const result = await handlePostAuth(req)
+
+        if (result.type === "error") {
+            res.status(400)
+
+            const body: PostAuthResponseBody = {
+                type: "error",
+                errors: result.errors,
+            }
+
+            res.json(body)
+            return
+        }
+
+        if (result.type === "ok") {
+            res.setHeader("Set-Cookie", formCookie(result.jwt))
+
+            const body: PostAuthResponseBody = {
+                type: "ok",
+            }
+
+            res.json(body)
+            return
         }
     } finally {
         res.end()
@@ -31,19 +55,19 @@ export interface PostAuthErrors {
     password: string[]
 }
 
-const postAuth = async (req: NextApiRequest, res: NextApiResponse) => {
-    const body = await handlePostAuth(req)
-
-    if (body.type === "error") {
-        res.status(400)
-    }
-
-    res.json(body)
-}
+type HandlePostAuthResult =
+    | {
+          type: "ok"
+          jwt: string
+      }
+    | {
+          type: "error"
+          errors: PostAuthErrors
+      }
 
 const handlePostAuth = async (
     req: NextApiRequest
-): Promise<PostAuthResponseBody> => {
+): Promise<HandlePostAuthResult> => {
     let body: Body
 
     try {
@@ -70,7 +94,33 @@ const handlePostAuth = async (
         }
     }
 
-    return { type: "ok" }
+    const loginResult = await tryLogin(body)
+
+    switch (loginResult.type) {
+        case "ok":
+            return {
+                type: "ok",
+                jwt: await sign(loginResult.user),
+            }
+
+        case "emailNotFound":
+            return {
+                type: "error",
+                errors: {
+                    email: ["Email not found"],
+                    password: [],
+                },
+            }
+
+        case "wrongPassword":
+            return {
+                type: "error",
+                errors: {
+                    email: [],
+                    password: ["Wrong password"],
+                },
+            }
+    }
 }
 
 const bodyZod = z.object({

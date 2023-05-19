@@ -1,15 +1,18 @@
 import { PostAuthErrors, PostAuthResponseBody } from "@/pages/api/auth"
 import { useMutation } from "@tanstack/react-query"
 import { useRef, useState } from "react"
+import { redirect } from "next/navigation"
+import { useRouter } from "next/router"
 
 const LoginForm = () => {
     const emailRef = useRef<HTMLInputElement>(null)
     const passwordRef = useRef<HTMLInputElement>(null)
 
+    const router = useRouter()
+
     const [error, setError] = useState<PostAuthErrors | null>(null)
 
     const loginMutation = useMutation({
-        //@ts-expect-error Bug in react-query typings
         mutationKey: ["login"],
 
         mutationFn: () => {
@@ -20,11 +23,14 @@ const LoginForm = () => {
         },
 
         onSuccess(data, _variables, _context) {
-            if (data.type === "ok") {
+            if (data.type === "error") {
+                setError(data.errors)
                 return
             }
 
-            setError(data.errors)
+            // Redirect to '/' won't work, since redirects from
+            // `next.config.js` are not handled when using `useRouter()`
+            router.push("/orders")
         },
     })
 

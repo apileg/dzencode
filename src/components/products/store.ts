@@ -27,6 +27,7 @@ export const useProductsStore = create<ProductsStore>((set, get) => ({
 
         const response = await fetch(`/api/product/${product.id}`, {
             method: "DELETE",
+            credentials: "include",
         })
 
         if (!response.ok) {
@@ -81,15 +82,19 @@ export async function fetchProductsWithType(
         searchParams.set("type", type)
     }
 
-    const response = await fetch(`/api/products?${searchParams.toString()}`)
-    const products = await response.json()
+    const response = await fetch(`/api/products?${searchParams.toString()}`, {
+        credentials: "include",
+    })
 
+    const products = await response.json()
     return products
 }
 
 export async function fetchTypes(): Promise<string[]> {
-    const response = await fetch("/api/products/types")
-    const types = response.json()
+    const response = await fetch("/api/products/types", {
+        credentials: "include",
+    })
 
+    const types = response.json()
     return types
 }

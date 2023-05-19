@@ -1,10 +1,10 @@
+import { hashPassword } from "@/bll/hashing"
+import { floatToCents } from "@/bll/money-conversion"
 import { orders } from "@/mock-data/orders"
 import { products } from "@/mock-data/products"
 import { Product } from "@/model"
 import { prisma } from "@/prisma"
 import { ProductEntity } from "@prisma/client"
-import { floatToCents } from "@/bll/money-conversion"
-import { hashPassword } from "@/bll/hashPassword"
 
 async function seedOrdersAndProducts() {
     prisma.$transaction(async (tx) => {

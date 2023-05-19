@@ -23,6 +23,7 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
     removeOrderById: async (orderId) => {
         const response = await fetch(`/api/order/${orderId}`, {
             method: "DELETE",
+            credentials: "include",
         })
 
         if (!response.ok) {
@@ -59,6 +60,7 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
     removeProduct: async (product: Product) => {
         const response = await fetch(`/api/product/${product.id}`, {
             method: "DELETE",
+            credentials: "include",
         })
 
         if (!response.ok) {
@@ -85,8 +87,10 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
 export const fetchProductsByOrderId = async (
     orderId: number
 ): Promise<Product[]> => {
-    const response = await fetch(`/api/order/${orderId}/products`)
-    const products = await response.json()
+    const response = await fetch(`/api/order/${orderId}/products`, {
+        credentials: "include",
+    })
 
+    const products = await response.json()
     return products
 }

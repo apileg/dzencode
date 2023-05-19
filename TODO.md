@@ -5,9 +5,11 @@
 -   Use table instead of flex in OrderList
 -   Add skeleton preview while <OrderInfo> is loading
 -   Uniform error messages style in API
+-   Redirect to HTTPS
+-   Rename `res` and `req`
 
 # NEXT:
 
--   Pack all this into Docker
+-   Pack all this into Docker (save dev deps into dev)
 -   Unit test API
 -   Unit test hook for /products

@@ -1,7 +1,6 @@
 import OrderPage, { OrderPageProps } from "@/components/order/OrderPage"
-import { prisma } from "@/prisma"
-import { GetServerSideProps } from "next"
 import { getOrders } from "@/dal/getOrders"
+import { GetServerSideProps } from "next"
 
 export default function Home(props: OrderPageProps) {
     // Make sure that <OrderPage> will never get unmounted. That's
