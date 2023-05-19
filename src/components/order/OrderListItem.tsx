@@ -85,7 +85,7 @@ const Collapsed = ({ orderIndex }: CollapsedProps) => {
 
     return (
         <>
-            <h1 className="underline tracking-widest w-20 max-h-[3em] text-ellipsis line-clamp-3">
+            <h1 className="underline tracking-widest w-[16em] line-clamp-2 text-ellipsis">
                 {title}
             </h1>
             <ProductCount

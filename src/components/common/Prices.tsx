@@ -5,15 +5,18 @@ const Prices = ({
     priceUsd: number
     priceUah: number
 }) => {
+    const usd = Math.round(priceUsd / 100)
+    const uah = Math.round(priceUah / 100)
+
     const inUsd = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
-    }).format(priceUsd)
+    }).format(usd)
 
     const inUah = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "UAH",
-    }).format(priceUah)
+    }).format(uah)
 
     return (
         <div className="flex flex-col items-start tracking-wide">

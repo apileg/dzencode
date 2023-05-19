@@ -5,7 +5,7 @@ const imageUrl = "/photos/takanaka.jpeg"
 export const products: Product[] = [
     {
         id: 1,
-        title: "Product 1",
+        title: "Product 1 buffalo buffalo buffalo buffalo buffalo buffalo buffalo buffalo",
         serialNumber: "SN001",
         availability: "Available",
         usedOrNew: "New",

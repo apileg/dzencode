@@ -30,12 +30,6 @@
 
 /* Styles for sizes */
 
-/* .fitWidth {
-    width: 99.99999%;
-    overflow-y: hidden;
-    overflow-x: auto;
-} */
-
 .productsTable {
     width: 100%;
     table-layout: auto;

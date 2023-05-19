@@ -136,10 +136,10 @@ const ProductsRow = ({ product, index }: ProductsRowProps) => {
             </td>
             <td>
                 <div className="flex flex-col items-start">
-                    <p className="text-[#2e3e45] underline decoration-[#dcdedf] decoration-2">
+                    <p className="text-[#2e3e45] underline decoration-[#dcdedf] decoration-2 truncate max-w-[7em]">
                         {product.title}
                     </p>
-                    <p className="text-[#93a6b0] text-sm">
+                    <p className="text-[#93a6b0] text-sm items-start">
                         {product.serialNumber}
                     </p>
                 </div>
@@ -172,7 +172,9 @@ const ProductsRow = ({ product, index }: ProductsRowProps) => {
                 </p>
             </td>
             <td>
-                <p className="text-sm text-[#2e3e45]">{product.order.title}</p>
+                <p className="text-sm text-[#2e3e45] line-clamp-2 text-ellipsis">
+                    {product.order.title}
+                </p>
             </td>
             <td className="text-sm text-[#2e3e45]">
                 <ClientSide>
