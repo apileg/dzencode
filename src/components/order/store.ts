@@ -26,7 +26,7 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
         })
 
         if (!response.ok) {
-            return
+            throw new Error(`Got status: ${response.status}`)
         }
 
         set((state) => ({

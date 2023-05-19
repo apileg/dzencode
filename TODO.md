@@ -4,6 +4,7 @@
 -   Takanaka's photo in Navbar is hardcoded (add User model)
 -   Use table instead of flex in OrderList
 -   Add skeleton preview while <OrderInfo> is loading
+-   Uniform error messages style in API
 
 # NEXT:
 
