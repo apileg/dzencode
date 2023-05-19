@@ -2,17 +2,17 @@ import { NextApiHandler } from "next"
 import { prisma } from "@/prisma"
 import { getProductTypes } from "@/dal/getProductTypes"
 
-const handler: NextApiHandler = async (req, res) => {
+const handler: NextApiHandler = async (request, response) => {
     try {
-        if (req.method !== "GET") {
-            res.status(404)
+        if (request.method !== "GET") {
+            response.status(404)
             return
         }
 
         const types = await getProductTypes()
-        res.json(types)
+        response.json(types)
     } finally {
-        res.end()
+        response.end()
     }
 }
 

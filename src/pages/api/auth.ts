@@ -3,39 +3,39 @@ import { tryLogin } from "@/dal/tryLogin"
 import { NextApiHandler, NextApiRequest } from "next"
 import { z, ZodError } from "zod"
 
-const handler: NextApiHandler = async (req, res) => {
+const handler: NextApiHandler = async (request, response) => {
     try {
-        if (req.method !== "POST") {
-            res.status(404)
+        if (request.method !== "POST") {
+            response.status(404)
             return
         }
 
-        const result = await handlePostAuth(req)
+        const result = await handlePostAuth(request)
 
         if (result.type === "error") {
-            res.status(400)
+            response.status(400)
 
             const body: PostAuthResponseBody = {
                 type: "error",
                 errors: result.errors,
             }
 
-            res.json(body)
+            response.json(body)
             return
         }
 
         if (result.type === "ok") {
-            res.setHeader("Set-Cookie", formCookie(result.jwt))
+            response.setHeader("Set-Cookie", formCookie(result.jwt))
 
             const body: PostAuthResponseBody = {
                 type: "ok",
             }
 
-            res.json(body)
+            response.json(body)
             return
         }
     } finally {
-        res.end()
+        response.end()
     }
 }
 
@@ -66,13 +66,13 @@ type HandlePostAuthResult =
       }
 
 const handlePostAuth = async (
-    req: NextApiRequest
+    request: NextApiRequest
 ): Promise<HandlePostAuthResult> => {
     let body: Body
 
     try {
         // For some reason, when body is empty, it's set to an empty string
-        const formBody = req.body === "" ? {} : req.body
+        const formBody = request.body === "" ? {} : request.body
 
         body = bodyZod.parse(formBody)
     } catch (error) {

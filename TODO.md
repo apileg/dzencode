@@ -6,7 +6,6 @@
 -   Add skeleton preview while <OrderInfo> is loading
 -   Uniform error messages style in API
 -   Redirect to HTTPS
--   Rename `res` and `req`
 
 # NEXT:
 

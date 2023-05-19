@@ -1,14 +1,14 @@
 import { NextApiHandler } from "next"
 import { Server, Socket } from "socket.io"
 
-const handler: NextApiHandler = async (req, res) => {
+const handler: NextApiHandler = async (request, response) => {
     try {
-        if (req.method !== "POST") {
-            res.status(400)
+        if (request.method !== "POST") {
+            response.status(400)
             return
         }
 
-        const server = (res.socket as any).server
+        const server = (response.socket as any).server
         if (server.io) {
             return
         }
@@ -23,7 +23,7 @@ const handler: NextApiHandler = async (req, res) => {
         setupServer(io)
         server.io = io
     } finally {
-        res.end()
+        response.end()
     }
 }
 

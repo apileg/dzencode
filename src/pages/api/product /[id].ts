@@ -3,25 +3,25 @@ import { NextApiHandler } from "next"
 import { parseId } from "../_utils/parseId"
 import { performDelete } from "../_utils/performDelete"
 
-const handler: NextApiHandler = async (req, res) => {
+const handler: NextApiHandler = async (request, response) => {
     try {
-        if (req.method !== "DELETE") {
-            res.status(404)
+        if (request.method !== "DELETE") {
+            response.status(404)
             return
         }
 
-        const id = parseId(req)
+        const id = parseId(request)
 
         if (id === null) {
-            res.status(404)
+            response.status(404)
             return
         }
 
-        await performDelete(res, () =>
+        await performDelete(response, () =>
             prisma.productEntity.delete({ where: { id } })
         )
     } finally {
-        res.end()
+        response.end()
     }
 }
 

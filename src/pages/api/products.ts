@@ -8,26 +8,26 @@ const queryZod = z.object({
 
 type Query = z.infer<typeof queryZod>
 
-const handler: NextApiHandler = async (req, res) => {
+const handler: NextApiHandler = async (request, response) => {
     try {
-        if (req.method !== "GET") {
-            res.status(404)
+        if (request.method !== "GET") {
+            response.status(404)
             return
         }
 
         let query: Query
 
         try {
-            query = queryZod.parse(req.query)
+            query = queryZod.parse(request.query)
         } catch {
-            res.status(400)
+            response.status(400)
             return
         }
 
         const products = await getProducts({ type: query.type })
-        res.json(products)
+        response.json(products)
     } finally {
-        res.end()
+        response.end()
     }
 }
 

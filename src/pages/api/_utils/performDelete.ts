@@ -2,19 +2,19 @@ import { NextApiResponse } from "next"
 import { Prisma } from "@prisma/client"
 
 export async function performDelete(
-    res: NextApiResponse,
+    response: NextApiResponse,
     fn: () => Promise<any>
 ) {
     try {
         await fn()
-        res.status(200)
+        response.status(200)
     } catch (error) {
         if (isDeleteNonExistentError(error)) {
-            res.status(404)
+            response.status(404)
             return
         }
 
-        res.status(500)
+        response.status(500)
     }
 }
 

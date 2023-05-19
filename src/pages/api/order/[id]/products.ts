@@ -2,17 +2,17 @@ import { prisma } from "@/prisma"
 import { NextApiHandler } from "next"
 import { parseId } from "../../_utils/parseId"
 
-const handler: NextApiHandler = async (req, res) => {
+const handler: NextApiHandler = async (request, response) => {
     try {
-        if (req.method !== "GET") {
-            res.status(404)
+        if (request.method !== "GET") {
+            response.status(404)
             return
         }
 
-        const id = parseId(req)
+        const id = parseId(request)
 
         if (id === null) {
-            res.status(404)
+            response.status(404)
             return
         }
 
@@ -23,9 +23,9 @@ const handler: NextApiHandler = async (req, res) => {
             },
         })
 
-        res.status(200).json(products)
+        response.status(200).json(products)
     } finally {
-        res.end()
+        response.end()
     }
 }
 
