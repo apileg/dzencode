@@ -3,35 +3,38 @@ import { floatToCents } from "@/bll/money-conversion"
 import { orders } from "@/mock-data/orders"
 import { products } from "@/mock-data/products"
 import { Product } from "@/model"
-import { prisma } from "@/prisma"
-import { ProductEntity } from "@prisma/client"
+import { ProductEntity, Prisma } from "@prisma/client"
 
-async function seedOrdersAndProducts() {
-    prisma.$transaction(async (tx) => {
-        const { id: userId } = await tx.userEntity.create({
+export async function seedDb(tx: Prisma.TransactionClient) {
+    const { id: userId } = await tx.userEntity.create({
+        data: {
+            avatarUrl: "/photos/takanaka.jpeg",
+            email: "user@site.io",
+            passwordHash: await hashPassword("password"),
+        },
+    })
+
+    for (const order of orders) {
+        const { id: orderId } = await tx.orderEntity.create({
             data: {
-                avatarUrl: "/photos/takanaka.jpeg",
-                email: "takanaka@seychelles.com",
-                passwordHash: await hashPassword("takanaka"),
+                userId,
+                title: order.title,
+                createdAt: order.createdAt,
             },
         })
 
-        for (const order of orders) {
-            const { id: orderId } = await tx.orderEntity.create({
-                data: {
-                    userId,
-                    title: order.title,
-                    createdAt: order.createdAt,
-                },
+        for (const product of products) {
+            await tx.productEntity.create({
+                data: productModelToCreateFields(product, orderId),
             })
-
-            for (const product of products) {
-                await tx.productEntity.create({
-                    data: productModelToCreateFields(product, orderId),
-                })
-            }
         }
-    })
+    }
+}
+
+export async function clearDb(tx: Prisma.TransactionClient) {
+    await tx.productEntity.deleteMany()
+    await tx.orderEntity.deleteMany()
+    await tx.userEntity.deleteMany()
 }
 
 function productModelToCreateFields(
@@ -49,7 +52,3 @@ function productModelToCreateFields(
 
     return obj
 }
-
-seedOrdersAndProducts()
-    .catch((error) => console.log(error))
-    .finally(() => prisma.$disconnect())

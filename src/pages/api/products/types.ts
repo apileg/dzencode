@@ -1,5 +1,4 @@
 import { NextApiHandler } from "next"
-import { prisma } from "@/prisma"
 import { getProductTypes } from "@/dal/getProductTypes"
 
 const handler: NextApiHandler = async (request, response) => {
