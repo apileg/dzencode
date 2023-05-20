@@ -14,9 +14,9 @@ export default function Home(props: OrderPageProps) {
     return <OrderPage {...props} />
 }
 
-export const getServerSideProps: GetServerSideProps<
-    OrderPageProps
-> = async () => {
+export const getServerSideProps: GetServerSideProps<OrderPageProps> = async (
+    context
+) => {
     const orders = await getOrders()
 
     return {

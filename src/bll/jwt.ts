@@ -1,5 +1,6 @@
 import { PlainUser } from "@/model"
 import * as jose from "jose"
+import { NextApiRequest } from "next"
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET)
 const algorithm = "HS256"
@@ -29,4 +30,20 @@ export function formCookie(jwt: string): string {
         `id=${jwt}; Secure; HttpOnly; SameSite=Lax; Path=/;` +
         `Domain=${process.env.DOMAIN}; Max-Age=${maxAgeSeconds};`
     )
+}
+
+export function decodeFromRequest(request: NextApiRequest): PlainUser | null {
+    const jwt = request.cookies["id"]
+
+    if (jwt === undefined) {
+        return null
+    }
+
+    const result = jose.decodeJwt(jwt)
+
+    return {
+        _type: "plainUser",
+        id: result.id as any,
+        avatarUrl: result.avatarUrl as any,
+    }
 }

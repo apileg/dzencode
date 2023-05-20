@@ -2,6 +2,8 @@ import React, { useState } from "react"
 import { ReactNode } from "react"
 import Link from "next/link"
 import { useRouter } from "next/router"
+import { useQuery } from "@tanstack/react-query"
+import { PlainUser } from "@/model"
 
 const Navbar = () => {
     return (
@@ -26,11 +28,24 @@ const Navbar = () => {
 export default Navbar
 
 const Avatar = () => {
+    const { data: user } = useQuery({
+        queryKey: ["me"],
+
+        queryFn: async () => {
+            const response = await fetch("/api/me", {
+                credentials: "include",
+            })
+
+            const user = (await response.json()) as PlainUser
+            return user
+        },
+    })
+
     const avatar = (
         // eslint-disable-next-line @next/next/no-img-element
         <img
             className="rounded-full"
-            src="/photos/takanaka.jpeg"
+            src={user?.avatarUrl ?? ""}
             alt="Takanaka"
         />
     )

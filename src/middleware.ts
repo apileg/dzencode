@@ -31,7 +31,10 @@ function handleGuest(request: NextRequest): NextResponse {
 }
 
 function isPublicPath(path: string) {
-    return ["/login", "/api/auth"].includes(path) || path.startsWith("/_next")
+    return (
+        ["/login", "/api/auth", "/favicon.ico"].includes(path) ||
+        path.startsWith("/_next")
+    )
 }
 
 function handleLoggedIn(request: NextRequest): NextResponse {
