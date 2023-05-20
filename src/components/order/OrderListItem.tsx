@@ -75,12 +75,21 @@ const Collapsed = ({ orderIndex }: CollapsedProps) => {
     const { id, title, productsCount, createdAt, totalUah, totalUsd } =
         useOrdersStore((store) => store.orders[orderIndex])
 
-    const removeOrderWithId = useOrdersStore((store) => store.removeOrderById)
+    const removeOrderById = useOrdersStore((store) => store.removeOrderById)
 
     const removeMutation = useMutation({
-        //@ts-expect-error it's OK
         mutationKey: ["removeOrder", id],
-        mutationFn: () => removeOrderWithId(id),
+
+        mutationFn: async () => {
+            await fetch(`/api/order/${id}`, {
+                method: "DELETE",
+                credentials: "include",
+            })
+        },
+
+        onSuccess(_data, _variables, _context) {
+            removeOrderById(id)
+        },
     })
 
     return (

@@ -4,7 +4,6 @@ import { create } from "zustand"
 export interface OrdersStore {
     orders: Order[]
     expandedOrderIndex: number | null
-    lastError: any | null
 
     hydrate(orders: Order[]): void
     removeOrderById(orderId: number): void
@@ -18,34 +17,10 @@ export interface OrdersStore {
 export const useOrdersStore = create<OrdersStore>((set, get) => ({
     orders: [],
     expandedOrderIndex: null,
-    lastError: null,
 
     hydrate: (orders) => set(() => ({ orders })),
 
-    removeOrderById: async (orderId) => {
-        let response: Response
-
-        try {
-            response = await fetch(`/api/order/${orderId}`, {
-                method: "DELETE",
-                credentials: "include",
-            })
-        } catch (error) {
-            set(() => ({
-                lastError: error,
-            }))
-
-            return
-        }
-
-        if (!response.ok) {
-            set(() => ({
-                lastError: new Error(`Got status: ${response.status}`),
-            }))
-
-            return
-        }
-
+    removeOrderById: (orderId) => {
         set((state) => ({
             orders: state.orders.filter((o) => o.id !== orderId),
         }))
@@ -73,30 +48,7 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
         }))
     },
 
-    removeProduct: async (product: Product) => {
-        let response: Response
-
-        try {
-            response = await fetch(`/api/product/${product.id}`, {
-                method: "DELETE",
-                credentials: "include",
-            })
-        } catch (error) {
-            set(() => ({
-                lastError: error,
-            }))
-
-            return
-        }
-
-        if (!response.ok) {
-            set(() => ({
-                lastError: new Error(`Got status: ${response.status}`),
-            }))
-
-            return
-        }
-
+    removeProduct: (product: Product) => {
         set((state) => ({
             orders: state.orders.map((order, index) => {
                 if (index !== state.expandedOrderIndex) {
@@ -113,14 +65,3 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
         }))
     },
 }))
-
-export const fetchProductsByOrderId = async (
-    orderId: number
-): Promise<Product[]> => {
-    const response = await fetch(`/api/order/${orderId}/products`, {
-        credentials: "include",
-    })
-
-    const products = await response.json()
-    return products
-}

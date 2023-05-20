@@ -77,12 +77,16 @@ const ProductItem = (product: Product) => {
     const expandedOrder = useExpandedOrder()
 
     const deleteProduct = useMutation({
-        //@ts-expect-error it's OK
         mutationKey: ["removeProductInOrder", product.id],
 
-        mutationFn: () => removeProduct(product),
-
+        mutationFn: async () => {
+            await fetch(`/api/product/${product.id}`, {
+                method: "DELETE",
+                credentials: "include",
+            })
+        },
         onSuccess: () => {
+            removeProduct(product)
             queryClient.invalidateQueries(["orderProducts", expandedOrder!.id])
         },
     })

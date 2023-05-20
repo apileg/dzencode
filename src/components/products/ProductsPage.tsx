@@ -6,9 +6,8 @@ import Dates from "../common/Dates"
 import Prices from "../common/Prices"
 import DropDownList from "./DropDownList"
 import styles from "./ProductsPage.module.css"
-import { fetchProductsWithType, useProductsStore } from "./store"
+import { useProductsStore } from "./store"
 import { useEffect } from "react"
-import { fetchTypes } from "./store"
 import Dot from "../common/icons/DotIcon"
 import TrashIcon from "../common/icons/TrashIcon"
 
@@ -68,6 +67,30 @@ const ProductsPage = ({ initialProducts, initialTypes }: ProductsPageProps) => {
 
 export default ProductsPage
 
+async function fetchProductsWithType(type: string | null): Promise<Product[]> {
+    const searchParams = new URLSearchParams()
+
+    if (type !== null) {
+        searchParams.set("type", type)
+    }
+
+    const response = await fetch(`/api/products?${searchParams.toString()}`, {
+        credentials: "include",
+    })
+
+    const products = await response.json()
+    return products
+}
+
+async function fetchTypes(): Promise<string[]> {
+    const response = await fetch("/api/products/types", {
+        credentials: "include",
+    })
+
+    const types = response.json()
+    return types
+}
+
 const ProductsCount = () => {
     const count = useProductsStore((store) => store.products.length)
 
@@ -116,9 +139,18 @@ const ProductsRow = ({ product, index }: ProductsRowProps) => {
     const removeProductAt = useProductsStore((store) => store.removeProductAt)
 
     const removeMutation = useMutation({
-        //@ts-expect-error it's OK
         mutationKey: ["removeProduct", index],
-        mutationFn: () => removeProductAt(index),
+
+        mutationFn: async () => {
+            await fetch(`/api/product/${product.id}`, {
+                method: "DELETE",
+                credentials: "include",
+            })
+        },
+
+        onSuccess(_data, _variables, _context) {
+            removeProductAt(index)
+        },
     })
 
     const stroke = index % 2 === 0 ? "stroke-[#cddc39]" : "stroke-[#2c3c44]"

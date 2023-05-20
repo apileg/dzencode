@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 import OrderInfo from "./OrderInfo"
 import OrderListItem from "./OrderListItem"
-import { useOrdersStore, fetchProductsByOrderId } from "./store"
+import { useOrdersStore } from "./store"
 import { useExpandedOrder } from "./useExpandedOrder"
+import { Product } from "@/model"
 
 const OrderList = () => {
     const orders = useOrdersStore((store) => store.orders)
@@ -30,3 +31,12 @@ const OrderList = () => {
 }
 
 export default OrderList
+
+async function fetchProductsByOrderId(orderId: number): Promise<Product[]> {
+    const response = await fetch(`/api/order/${orderId}/products`, {
+        credentials: "include",
+    })
+
+    const products = await response.json()
+    return products
+}
