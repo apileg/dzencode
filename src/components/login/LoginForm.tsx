@@ -1,8 +1,7 @@
 import { PostAuthErrors, PostAuthResponseBody } from "@/pages/api/auth"
 import { useMutation } from "@tanstack/react-query"
-import { useRef, useState } from "react"
-import { redirect } from "next/navigation"
 import { useRouter } from "next/router"
+import { useRef, useState } from "react"
 
 const LoginForm = () => {
     const emailRef = useRef<HTMLInputElement>(null)
@@ -30,7 +29,7 @@ const LoginForm = () => {
 
             // Redirect to '/' won't work, since redirects from
             // `next.config.js` are not handled when using `useRouter()`
-            router.push("/orders")
+            router.replace("/orders")
         },
     })
 

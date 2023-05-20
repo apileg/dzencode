@@ -3,16 +3,10 @@ import { NextResponse } from "next/server"
 import { verify } from "./bll/jwt"
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
-    const { pathname } = request.nextUrl
-
-    if (isOpenPath(pathname)) {
-        return NextResponse.next()
-    }
-
     const jwtCookie = request.cookies.get("id")
 
     if (jwtCookie === undefined) {
-        return redirectToLogin()
+        return handleGuest(request)
     }
 
     const jwt = jwtCookie.value
@@ -20,21 +14,38 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     try {
         await verify(jwt)
     } catch (error) {
-        return redirectToLogin()
+        return handleGuest(request)
+    }
+
+    return handleLoggedIn(request)
+}
+
+function handleGuest(request: NextRequest): NextResponse {
+    const { pathname } = request.nextUrl
+
+    if (isPublicPath(pathname)) {
+        return NextResponse.next()
+    }
+
+    return redirectToPath(request, "/login")
+}
+
+function isPublicPath(path: string) {
+    return ["/login", "/api/auth"].includes(path) || path.startsWith("/_next")
+}
+
+function handleLoggedIn(request: NextRequest): NextResponse {
+    const { pathname } = request.nextUrl
+
+    if (pathname === "/login") {
+        return redirectToPath(request, "/")
     }
 
     return NextResponse.next()
-
-    function redirectToLogin(): NextResponse {
-        const url = new URL(request.nextUrl)
-        url.pathname = "/login"
-
-        return NextResponse.redirect(url)
-    }
 }
 
-const guestRoutes = ["/login", "/api/auth"]
-
-function isOpenPath(path: string) {
-    return guestRoutes.includes(path) || path.startsWith("/_next")
+function redirectToPath(request: NextRequest, path: string): NextResponse {
+    const url = new URL(request.nextUrl)
+    url.pathname = path
+    return NextResponse.redirect(url)
 }
