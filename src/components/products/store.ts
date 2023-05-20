@@ -21,7 +21,7 @@ export const useProductsStore = create<ProductsStore>((set, get) => ({
 
     updateProducts: (products) => set(() => ({ products })),
 
-    removeProductAt: async (productIndex) => {
+    removeProductAt: (productIndex) => {
         const store = get()
 
         if (shouldResetCurrentTypeAfterDelete(store, productIndex)) {

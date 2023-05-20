@@ -28,7 +28,6 @@ test("initial state is empty", async () => {
         expect(result.current).toMatchObject<Partial<OrdersStore>>({
             orders: [],
             expandedOrderIndex: null,
-            lastError: null,
         })
     })
 })
@@ -56,7 +55,7 @@ const orders: Order[] = [
     },
 ]
 
-test("hydrate sets orders and leaves expandedOrderIndex unchanged", async () => {
+test("hydrate should set order and leave expandedOrderIndex unchanged", async () => {
     const { result } = renderUseOrdersStore()
 
     const initialOrders = orders
@@ -73,93 +72,24 @@ test("hydrate sets orders and leaves expandedOrderIndex unchanged", async () => 
     })
 })
 
-describe("remove order by id", () => {
-    test("sends request to DELETE /api/order/${id}", async () => {
-        const id = 42
-        const endpoint = `/api/order/${id}`
+test("removeOrderById should update orders", async () => {
+    const { result } = renderUseOrdersStore()
+    const initialOrders = orders
 
-        fetchMock.delete(endpoint, 200)
-
-        const { result } = renderUseOrdersStore()
-
-        act(() => {
-            result.current.removeOrderById(id)
-        })
-
-        await waitFor(() => {
-            expect(fetchMock).toHaveFetched(endpoint)
-        })
+    act(() => {
+        result.current.hydrate(initialOrders)
     })
 
-    test("deletes order from state", async () => {
-        fetchMock.delete(`/api/order/${orders[0].id}`, 200)
-
-        const { result } = renderUseOrdersStore()
-        const initialOrders = orders
-
-        act(() => {
-            result.current.hydrate(initialOrders)
-        })
-
-        await waitFor(() => {
-            expect(result.current.orders).toEqual(initialOrders)
-        })
-
-        act(() => {
-            result.current.removeOrderById(orders[0].id)
-        })
-
-        await waitFor(() => {
-            expect(result.current.orders).toHaveLength(1)
-        })
+    await waitFor(() => {
+        expect(result.current.orders).toEqual(initialOrders)
     })
 
-    describe("does not change state", () => {
-        test("when fetch throws", async () => {
-            const message = "Network error"
+    act(() => {
+        result.current.removeOrderById(orders[0].id)
+    })
 
-            fetchMock.delete(`/api/order/${orders[0].id}`, {
-                throws: new Error(message),
-            })
-
-            await expectRemoveReturnsErrorAndDoesNotChangeState(message)
-        })
-
-        test("when status code is not 200", async () => {
-            fetchMock.delete(`/api/order/${orders[0].id}`, 418)
-
-            await expectRemoveReturnsErrorAndDoesNotChangeState(
-                "Got status: 418"
-            )
-        })
-
-        async function expectRemoveReturnsErrorAndDoesNotChangeState(
-            message: string
-        ) {
-            const { result } = renderUseOrdersStore()
-            const initialOrders = orders
-
-            act(() => {
-                result.current.hydrate(initialOrders)
-            })
-
-            await waitFor(() => {
-                expect(result.current.orders).toEqual(initialOrders)
-            })
-
-            act(() => {
-                result.current.removeOrderById(orders[0].id)
-            })
-
-            await waitFor(() => {
-                expect(result.current).toMatchObject<Partial<OrdersStore>>({
-                    orders: initialOrders,
-                    expandedOrderIndex: null,
-                })
-
-                expect(result.current.lastError).toMatchObject({ message })
-            })
-        }
+    await waitFor(() => {
+        expect(result.current.orders).toHaveLength(1)
     })
 })
 
@@ -202,148 +132,102 @@ const products: Product[] = [
     },
 ]
 
-describe("remove product", () => {
-    test("sends request to DELETE /api/product/${id}", async () => {
-        const product = products[0]
-        const endpoint = `/api/product/${product.id}`
+test("removeProduct should update expanded order's total price and products count", async () => {
+    const firstOrder = createOrderWithProducts()
+    const secondOrder = orders[0]
 
-        fetchMock.delete(endpoint, 200)
+    const { result } = renderUseOrdersStore()
+    await hydrateExpandFirstOrderAndWaitForLoad()
 
-        const { result } = renderHook(() => useOrdersStore())
+    const product = products[0]
+
+    act(() => {
+        result.current.removeProduct(product)
+    })
+
+    await waitFor(() => {
+        expectFirstOrderToUpdate()
+        expectSecondOrderToRemainSame()
+    })
+
+    function createOrderWithProducts(): Order {
+        return {
+            id: 42,
+
+            title: "The answer to all you questions",
+            createdAt: 0,
+
+            productsCount: products.length,
+            totalUsd: products.reduce((total, p) => total + p.priceUsd, 0),
+            totalUah: products.reduce((total, p) => total + p.priceUah, 0),
+        }
+    }
+
+    async function hydrateExpandFirstOrderAndWaitForLoad() {
+        const initialOrders = [firstOrder, secondOrder]
 
         act(() => {
-            result.current.removeProduct(product)
+            result.current.hydrate(initialOrders)
+            result.current.clickOnOrderAt(0)
         })
 
         await waitFor(() => {
-            expect(fetchMock).toHaveFetched(endpoint)
+            expect(result.current.orders).toEqual(initialOrders)
+            expect(result.current.expandedOrderIndex).toBe(0)
         })
-    })
+    }
 
-    test("should update expanded order's total price and products count", async () => {
-        const firstOrder = createOrderWithProducts()
-        const secondOrder = orders[0]
+    function expectFirstOrderToUpdate() {
+        const newFirstOrder = result.current.orders[0]
 
-        const { result } = renderUseOrdersStore()
-        await hydrateExpandFirstOrderAndWaitForLoad()
+        expect(newFirstOrder.totalUah).toBe(
+            firstOrder.totalUah - product.priceUah
+        )
+        expect(newFirstOrder.totalUsd).toBe(
+            firstOrder.totalUsd - product.priceUsd
+        )
 
-        const product = products[0]
-        mockDeleteProductEndpoint(product)
+        expect(newFirstOrder.productsCount).toBe(firstOrder.productsCount - 1)
+    }
 
-        act(() => {
-            result.current.removeProduct(product)
-        })
-
-        await waitFor(() => {
-            expectFirstOrderToUpdate()
-            expectSecondOrderToRemainSame()
-        })
-
-        function createOrderWithProducts(): Order {
-            return {
-                id: 42,
-
-                title: "The answer to all you questions",
-                createdAt: 0,
-
-                productsCount: products.length,
-                totalUsd: products.reduce((total, p) => total + p.priceUsd, 0),
-                totalUah: products.reduce((total, p) => total + p.priceUah, 0),
-            }
-        }
-
-        async function hydrateExpandFirstOrderAndWaitForLoad() {
-            const initialOrders = [firstOrder, secondOrder]
-
-            act(() => {
-                result.current.hydrate(initialOrders)
-                result.current.clickOnOrderAt(0)
-            })
-
-            await waitFor(() => {
-                expect(result.current.orders).toEqual(initialOrders)
-                expect(result.current.expandedOrderIndex).toBe(0)
-            })
-        }
-
-        function mockDeleteProductEndpoint(product: Product) {
-            const endpoint = `/api/product/${product.id}`
-            fetchMock.delete(endpoint, 200)
-        }
-
-        function expectFirstOrderToUpdate() {
-            const newFirstOrder = result.current.orders[0]
-
-            expect(newFirstOrder.totalUah).toBe(
-                firstOrder.totalUah - product.priceUah
-            )
-            expect(newFirstOrder.totalUsd).toBe(
-                firstOrder.totalUsd - product.priceUsd
-            )
-
-            expect(newFirstOrder.productsCount).toBe(
-                firstOrder.productsCount - 1
-            )
-        }
-
-        function expectSecondOrderToRemainSame() {
-            const newSecondOrder = result.current.orders[1]
-            expect(newSecondOrder).toMatchObject(secondOrder)
-        }
-    })
-
-    describe("sets lastError", () => {
-        test("when fetch throws", async () => {
-            const message = "Error!"
-            const product = products[0]
-
-            fetchMock.delete(`/api/product/${product.id}`, {
-                throws: new Error(message),
-            })
-
-            await expectRemoveReturnsErrorAndDoesNotChangeState(
-                product,
-                message
-            )
-        })
-
-        test("when response status is not 200", async () => {
-            const product = products[0]
-            fetchMock.delete(`/api/product/${product.id}`, 418)
-
-            await expectRemoveReturnsErrorAndDoesNotChangeState(
-                product,
-                "Got status: 418"
-            )
-        })
-
-        async function expectRemoveReturnsErrorAndDoesNotChangeState(
-            product: Product,
-            message: string
-        ) {
-            const { result } = renderUseOrdersStore()
-
-            act(() => {
-                result.current.removeProduct(product)
-            })
-
-            await waitFor(() => {
-                expect(result.current.lastError).toMatchObject({ message })
-
-                expect(result.current).toMatchObject<Partial<OrdersStore>>({
-                    orders: [],
-                    expandedOrderIndex: null,
-                })
-            })
-        }
-    })
+    function expectSecondOrderToRemainSame() {
+        const newSecondOrder = result.current.orders[1]
+        expect(newSecondOrder).toMatchObject(secondOrder)
+    }
 })
 
-describe("on order click", () => {
-    test("once", () => {
-        const { result } = renderUseOrdersStore()
+test("clickOnOrderAt: clicking once expands order; clicking twice collapses order", async () => {
+    const { result } = renderUseOrdersStore()
 
-        act(() => {})
+    act(() => {
+        result.current.hydrate(orders)
     })
-    test("twice", () => {})
+
+    await waitFor(() => {
+        expect(result.current.orders).toEqual(orders)
+    })
+
+    act(() => {
+        result.current.clickOnOrderAt(0)
+    })
+
+    await waitFor(() => {
+        expect(result.current.expandedOrderIndex).toBe(0)
+    })
+
+    act(() => {
+        result.current.clickOnOrderAt(1)
+    })
+
+    await waitFor(() => {
+        expect(result.current.expandedOrderIndex).toBe(1)
+    })
+
+    act(() => {
+        result.current.clickOnOrderAt(1)
+    })
+
+    await waitFor(() => {
+        expect(result.current.expandedOrderIndex).toBe(null)
+    })
 })
