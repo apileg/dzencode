@@ -9,6 +9,6 @@
 
 # NEXT:
 
--   Pack all this into Docker (save dev deps into dev)
 -   Unit test API
--   Unit test hook for /products
+-   Explain CSRF attack
+-   Pack all this into Docker (save dev deps into dev)

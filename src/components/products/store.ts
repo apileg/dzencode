@@ -5,6 +5,7 @@ export interface ProductsStore {
     products: Product[]
     currentType: string | null
     types: string[]
+    lastError: any | null
 
     updateProducts(products: Product[]): void
     removeProductAt(productIndex: number): void
@@ -18,6 +19,7 @@ export const useProductsStore = create<ProductsStore>((set, get) => ({
     products: [],
     currentType: null,
     types: [],
+    lastError: null,
 
     updateProducts: (products) => set(() => ({ products })),
 
@@ -25,12 +27,26 @@ export const useProductsStore = create<ProductsStore>((set, get) => ({
         const store = get()
         const product = store.products[productIndex]
 
-        const response = await fetch(`/api/product/${product.id}`, {
-            method: "DELETE",
-            credentials: "include",
-        })
+        let response: Response
+
+        try {
+            response = await fetch(`/api/product/${product.id}`, {
+                method: "DELETE",
+                credentials: "include",
+            })
+        } catch (error) {
+            set(() => ({
+                lastError: error,
+            }))
+
+            return
+        }
 
         if (!response.ok) {
+            set(() => ({
+                lastError: new Error(`Got status: ${response.status}`),
+            }))
+
             return
         }
 

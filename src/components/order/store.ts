@@ -4,6 +4,7 @@ import { create } from "zustand"
 export interface OrdersStore {
     orders: Order[]
     expandedOrderIndex: number | null
+    lastError: any | null
 
     hydrate(orders: Order[]): void
     removeOrderById(orderId: number): void
@@ -17,17 +18,32 @@ export interface OrdersStore {
 export const useOrdersStore = create<OrdersStore>((set, get) => ({
     orders: [],
     expandedOrderIndex: null,
+    lastError: null,
 
     hydrate: (orders) => set(() => ({ orders })),
 
     removeOrderById: async (orderId) => {
-        const response = await fetch(`/api/order/${orderId}`, {
-            method: "DELETE",
-            credentials: "include",
-        })
+        let response: Response
+
+        try {
+            response = await fetch(`/api/order/${orderId}`, {
+                method: "DELETE",
+                credentials: "include",
+            })
+        } catch (error) {
+            set(() => ({
+                lastError: error,
+            }))
+
+            return
+        }
 
         if (!response.ok) {
-            throw new Error(`Got status: ${response.status}`)
+            set(() => ({
+                lastError: new Error(`Got status: ${response.status}`),
+            }))
+
+            return
         }
 
         set((state) => ({
@@ -58,12 +74,26 @@ export const useOrdersStore = create<OrdersStore>((set, get) => ({
     },
 
     removeProduct: async (product: Product) => {
-        const response = await fetch(`/api/product/${product.id}`, {
-            method: "DELETE",
-            credentials: "include",
-        })
+        let response: Response
+
+        try {
+            response = await fetch(`/api/product/${product.id}`, {
+                method: "DELETE",
+                credentials: "include",
+            })
+        } catch (error) {
+            set(() => ({
+                lastError: error,
+            }))
+
+            return
+        }
 
         if (!response.ok) {
+            set(() => ({
+                lastError: new Error(`Got status: ${response.status}`),
+            }))
+
             return
         }
 
