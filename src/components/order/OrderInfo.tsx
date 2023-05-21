@@ -20,21 +20,23 @@ const OrderInfo = ({ products }: OrderInfoProps) => {
 
     return (
         <div className="w-full h-full border-2 solid rounded-md p-3 m-3">
-            <button
-                type="button"
-                className="absolute top-[14.6rem] right-[4.6rem] border-2 solid drop-shadow-xl bg-white rounded-full text-gray-400 bg-transparent text-sm p-1.5 ml-auto inline-flex items-center ">
-                <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    onClick={closeCurrentOrder}
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        fillRule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clipRule="evenodd"></path>
-                </svg>
-            </button>
+            <div className="relative">
+                <button
+                    type="button"
+                    className="absolute -top-8 -right-8 border-2 solid drop-shadow-xl bg-white rounded-full text-gray-400 bg-transparent text-sm p-1.5 ml-auto inline-flex items-center ">
+                    <svg
+                        className="w-5 h-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                        onClick={closeCurrentOrder}
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            fillRule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clipRule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
             <div className="pt-3 px-3">
                 <h1 className="text-left font-medium text-2xl pl-2">
                     {orderTitle}
