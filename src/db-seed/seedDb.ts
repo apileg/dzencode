@@ -1,17 +1,31 @@
-import { hashPassword } from "@/bll/hashing"
 import { floatToCents } from "@/bll/money-conversion"
-import { orders } from "@/mock-data/orders"
-import { products } from "@/mock-data/products"
 import { Product } from "@/model"
-import { ProductEntity, Prisma } from "@prisma/client"
+import { prisma } from "@/prisma"
+import { UserEntity, ProductEntity, Prisma } from "@prisma/client"
+import { orders } from "./orders"
+import { products } from "./products"
+import { getUsers } from "./getUsers"
+
+export async function clearDb(tx: Prisma.TransactionClient) {
+    await tx.productEntity.deleteMany()
+    await tx.orderEntity.deleteMany()
+    await tx.userEntity.deleteMany()
+}
 
 export async function seedDb(tx: Prisma.TransactionClient) {
+    await prisma.$transaction(async (tx) => {
+        for (const user of await getUsers()) {
+            await seedUser(tx, user)
+        }
+    })
+}
+
+async function seedUser(
+    tx: Prisma.TransactionClient,
+    user: Omit<UserEntity, "id">
+) {
     const { id: userId } = await tx.userEntity.create({
-        data: {
-            avatarUrl: "/photos/takanaka.jpeg",
-            email: "user@site.io",
-            passwordHash: await hashPassword("password"),
-        },
+        data: user,
     })
 
     for (const order of orders) {
@@ -29,12 +43,6 @@ export async function seedDb(tx: Prisma.TransactionClient) {
             })
         }
     }
-}
-
-export async function clearDb(tx: Prisma.TransactionClient) {
-    await tx.productEntity.deleteMany()
-    await tx.orderEntity.deleteMany()
-    await tx.userEntity.deleteMany()
 }
 
 function productModelToCreateFields(

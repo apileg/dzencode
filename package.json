@@ -7,7 +7,7 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "seed": "tsx ./src/dal/runSeed.ts",
+        "seed": "tsx ./src/db-seed/cli.ts",
         "test:api": "./tests/jest/integration/run.sh"
     },
     "dependencies": {
