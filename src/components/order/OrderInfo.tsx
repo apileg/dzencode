@@ -38,7 +38,7 @@ const OrderInfo = ({ products }: OrderInfoProps) => {
                 </button>
             </div>
             <div className="pt-3 px-3">
-                <h1 className="text-left font-medium text-2xl pl-2">
+                <h1 className="text-left font-medium text-2xl pl-2 truncate max-w-[25em] min-w-[5rem]">
                     {orderTitle}
                 </h1>
 
@@ -104,7 +104,7 @@ const ProductItem = (product: Product) => {
                 <Dot stroke="stroke-[#cddc39]" fill="fill-[#cddc39]" />
                 <div className="h-10 w-10">{image}</div>
                 <div className="text-sm">
-                    <p className="text-[#2e3e45] underline decoration-[#dcdedf] decoration-2">
+                    <p className="text-[#2e3e45] underline decoration-[#dcdedf] decoration-2 truncate max-w-[12rem] min-w-[12rem]">
                         {product.title}
                     </p>
                     <p className="text-[#93a6b0]">{product.serialNumber}</p>

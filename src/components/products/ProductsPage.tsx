@@ -168,7 +168,7 @@ const ProductsRow = ({ product, index }: ProductsRowProps) => {
             </td>
             <td>
                 <div className="flex flex-col items-start">
-                    <p className="text-[#2e3e45] underline decoration-[#dcdedf] decoration-2 truncate max-w-[7em]">
+                    <p className="text-[#2e3e45] underline decoration-[#dcdedf] decoration-2 truncate max-w-[5em] min-w-[5rem]">
                         {product.title}
                     </p>
                     <p className="text-[#93a6b0] text-sm items-start">
