@@ -8,7 +8,7 @@ const algorithm = "HS256"
 const expiration = "1h"
 const maxAgeSeconds = 60 * 60
 
-export async function sign(user: PlainUser): Promise<string> {
+export async function signJwt(user: PlainUser): Promise<string> {
     const jwt = new jose.SignJWT({ ...user })
         .setProtectedHeader({ alg: algorithm })
         .setIssuedAt()
@@ -18,12 +18,12 @@ export async function sign(user: PlainUser): Promise<string> {
     return jwt
 }
 
-export async function verify(jwt: string): Promise<PlainUser> {
+export async function verifyJwt(jwt: string): Promise<PlainUser> {
     const result = await jose.jwtVerify(jwt, secret)
     return result.payload as any
 }
 
-export function formCookie(jwt: string): string {
+export function formJwtCookie(jwt: string): string {
     // See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
     // And also see /SECURITY.md
     return (
@@ -32,7 +32,9 @@ export function formCookie(jwt: string): string {
     )
 }
 
-export function decodeFromRequest(request: NextApiRequest): PlainUser | null {
+export function getUserFromJwtCookie(
+    request: NextApiRequest
+): PlainUser | null {
     const jwt = request.cookies["id"]
 
     if (jwt === undefined) {

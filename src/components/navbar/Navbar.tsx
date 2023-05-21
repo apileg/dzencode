@@ -46,7 +46,7 @@ const Avatar = () => {
         <img
             className="rounded-full"
             src={user?.avatarUrl ?? ""}
-            alt="Takanaka"
+            alt="Avatar"
         />
     )
 

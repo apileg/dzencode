@@ -1,6 +1,5 @@
-import type { NextRequest } from "next/server"
-import { NextResponse } from "next/server"
-import { verify } from "./bll/jwt"
+import { NextRequest, NextResponse } from "next/server"
+import { verifyJwt } from "./bll/jwt"
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
     const jwtCookie = request.cookies.get("id")
@@ -12,7 +11,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     const jwt = jwtCookie.value
 
     try {
-        await verify(jwt)
+        await verifyJwt(jwt)
     } catch (error) {
         return handleGuest(request)
     }

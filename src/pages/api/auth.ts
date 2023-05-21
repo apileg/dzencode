@@ -1,4 +1,4 @@
-import { formCookie, sign } from "@/bll/jwt"
+import { formJwtCookie, signJwt } from "@/bll/jwt"
 import { tryLogin } from "@/dal/tryLogin"
 import { NextApiHandler, NextApiRequest } from "next"
 import { z, ZodError } from "zod"
@@ -25,7 +25,7 @@ const handler: NextApiHandler = async (request, response) => {
         }
 
         if (result.type === "ok") {
-            response.setHeader("Set-Cookie", formCookie(result.jwt))
+            response.setHeader("Set-Cookie", formJwtCookie(result.jwt))
 
             const body: PostAuthResponseBody = {
                 type: "ok",
@@ -100,7 +100,7 @@ const handlePostAuth = async (
         case "ok":
             return {
                 type: "ok",
-                jwt: await sign(loginResult.user),
+                jwt: await signJwt(loginResult.user),
             }
 
         case "emailNotFound":

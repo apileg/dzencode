@@ -1,7 +1,9 @@
-import { prisma } from "@/prisma"
 import { NextApiHandler } from "next"
 import { parseId } from "../_utils/parseId"
 import { performDelete } from "../_utils/performDelete"
+import { deleteProduct } from "@/dal/deleteProduct"
+import { getUserFromJwtCookie } from "@/bll/jwt"
+import { doesUserOwnProduct } from "@/dal/doesUserOwnProduct"
 
 const handler: NextApiHandler = async (request, response) => {
     try {
@@ -17,9 +19,21 @@ const handler: NextApiHandler = async (request, response) => {
             return
         }
 
-        await performDelete(response, () =>
-            prisma.productEntity.delete({ where: { id } })
-        )
+        const user = getUserFromJwtCookie(request)
+
+        if (user === null) {
+            response.status(500)
+            return
+        }
+
+        const userIsOwner = await doesUserOwnProduct(user.id, id)
+
+        if (!userIsOwner) {
+            response.status(404)
+            return
+        }
+
+        await performDelete(response, () => deleteProduct(id))
     } finally {
         response.end()
     }

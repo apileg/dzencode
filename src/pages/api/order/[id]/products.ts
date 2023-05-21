@@ -1,6 +1,8 @@
-import { prisma } from "@/prisma"
 import { NextApiHandler } from "next"
 import { parseId } from "../../_utils/parseId"
+import { getUserFromJwtCookie } from "@/bll/jwt"
+import { doesUserOwnOrder } from "@/dal/doesUserOwnOrder"
+import { getProducts } from "@/dal/getProducts"
 
 const handler: NextApiHandler = async (request, response) => {
     try {
@@ -16,13 +18,23 @@ const handler: NextApiHandler = async (request, response) => {
             return
         }
 
-        // Query 4
-        const products = await prisma.productEntity.findMany({
-            where: {
-                orderId: id,
-            },
-        })
+        const user = getUserFromJwtCookie(request)
 
+        // Should never happen, since `middleware.ts` would redirect
+        // user if they are not authenticated
+        if (user === null) {
+            response.status(500)
+            return
+        }
+
+        const userIsOwner = await doesUserOwnOrder(user.id, id)
+
+        if (!userIsOwner) {
+            response.status(404)
+            return
+        }
+
+        const products = await getProducts({ orderId: id })
         response.status(200).json(products)
     } finally {
         response.end()

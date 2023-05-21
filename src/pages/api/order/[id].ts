@@ -2,6 +2,9 @@ import { prisma } from "@/prisma"
 import { NextApiHandler } from "next"
 import { parseId } from "../_utils/parseId"
 import { performDelete } from "../_utils/performDelete"
+import { getUserFromJwtCookie } from "@/bll/jwt"
+import { doesUserOwnOrder } from "@/dal/doesUserOwnOrder"
+import { deleteOrder } from "@/dal/deleteOrder"
 
 const handler: NextApiHandler = async (request, response) => {
     try {
@@ -17,9 +20,21 @@ const handler: NextApiHandler = async (request, response) => {
             return
         }
 
-        await performDelete(response, () =>
-            prisma.orderEntity.delete({ where: { id } })
-        )
+        const user = getUserFromJwtCookie(request)
+
+        if (user === null) {
+            response.status(500)
+            return
+        }
+
+        const userIsOwner = await doesUserOwnOrder(user.id, id)
+
+        if (!userIsOwner) {
+            response.status(404)
+            return
+        }
+
+        await performDelete(response, () => deleteOrder(id))
     } finally {
         response.end()
     }
