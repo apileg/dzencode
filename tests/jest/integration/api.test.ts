@@ -33,7 +33,7 @@ beforeAll(async () => {
 
 async function setupDb() {
     await prisma.$transaction(async (tx) => {
-        await clearDb(tx)
+        // await clearDb(tx)
         await seedDb(tx)
     })
 }
@@ -83,3 +83,7 @@ test("GET /api/products", async () => {
     const returnedProducts = JSON.parse(res._getData())
     expect(returnedProducts).toMatchObject(products)
 })
+
+test("DELETE /api/order/[id]", async () => {})
+
+test("DELETE /api/product/[id]", async () => {})

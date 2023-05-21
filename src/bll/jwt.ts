@@ -1,6 +1,5 @@
 import { PlainUser } from "@/model"
 import * as jose from "jose"
-import { NextApiRequest } from "next"
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET)
 const algorithm = "HS256"

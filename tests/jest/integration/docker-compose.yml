@@ -8,5 +8,5 @@ services:
         ports:
             - "3307:3306"
         environment:
-            MYSQL_ROOT_PASSWORD: password
+            MYSQL_ALLOW_EMPTY_PASSWORD: true
             MYSQL_DATABASE: tests
