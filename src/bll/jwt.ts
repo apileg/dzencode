@@ -32,8 +32,12 @@ export function formJwtCookie(jwt: string): string {
     )
 }
 
+export interface RequestWithCookies {
+    cookies: Record<string, string | undefined>
+}
+
 export function getUserFromJwtCookie(
-    request: NextApiRequest
+    request: RequestWithCookies
 ): PlainUser | null {
     const jwt = request.cookies["id"]
 

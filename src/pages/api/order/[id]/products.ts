@@ -2,7 +2,7 @@ import { NextApiHandler } from "next"
 import { parseId } from "../../_utils/parseId"
 import { getUserFromJwtCookie } from "@/bll/jwt"
 import { doesUserOwnOrder } from "@/dal/doesUserOwnOrder"
-import { getProducts } from "@/dal/getProducts"
+import { getProductsOfOrder } from "@/dal/getProductsOfOrder"
 
 const handler: NextApiHandler = async (request, response) => {
     try {
@@ -34,7 +34,7 @@ const handler: NextApiHandler = async (request, response) => {
             return
         }
 
-        const products = await getProducts({ orderId: id })
+        const products = await getProductsOfOrder(id)
         response.status(200).json(products)
     } finally {
         response.end()

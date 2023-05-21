@@ -1,8 +1,7 @@
 import { Order } from "@/model"
 import { prisma } from "@/prisma"
 
-export async function getOrders(): Promise<Order[]> {
-    // Query 1
+export async function getOrders(userId: number): Promise<Order[]> {
     const entities = (await prisma.$queryRaw`
         select
             o.id,
@@ -17,6 +16,8 @@ export async function getOrders(): Promise<Order[]> {
             productEntity as p
         on
             p.orderId = o.id
+        where
+            o.userId = ${userId}
         group by
             o.id
     `) as any[]

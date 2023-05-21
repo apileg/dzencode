@@ -1,5 +1,6 @@
 import { NextApiHandler } from "next"
 import { getProductTypes } from "@/dal/getProductTypes"
+import { getUserFromJwtCookie } from "@/bll/jwt"
 
 const handler: NextApiHandler = async (request, response) => {
     try {
@@ -8,7 +9,14 @@ const handler: NextApiHandler = async (request, response) => {
             return
         }
 
-        const types = await getProductTypes()
+        const user = getUserFromJwtCookie(request)
+
+        if (user === null) {
+            response.status(500)
+            return
+        }
+
+        const types = await getProductTypes(user.id)
         response.json(types)
     } finally {
         response.end()

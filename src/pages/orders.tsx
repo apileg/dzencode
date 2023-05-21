@@ -1,6 +1,7 @@
 import OrderPage, { OrderPageProps } from "@/components/order/OrderPage"
 import { getOrders } from "@/dal/getOrders"
 import { GetServerSideProps } from "next"
+import { getUserFromJwtCookie } from "@/bll/jwt"
 
 export default function Home(props: OrderPageProps) {
     // Make sure that <OrderPage> will never get unmounted. That's
@@ -17,7 +18,8 @@ export default function Home(props: OrderPageProps) {
 export const getServerSideProps: GetServerSideProps<OrderPageProps> = async (
     context
 ) => {
-    const orders = await getOrders()
+    const user = getUserFromJwtCookie(context.req)!
+    const orders = await getOrders(user.id)
 
     return {
         props: {

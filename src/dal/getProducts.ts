@@ -1,21 +1,22 @@
 import { prisma } from "@/prisma"
 import { Product } from "@/model"
 
-export interface ProductsFilter {
+export async function getProducts(
+    userId: number,
     type?: string | undefined
-    orderId?: number | undefined
-}
-
-export async function getProducts({
-    type,
-    orderId,
-}: ProductsFilter): Promise<Product[]> {
+): Promise<Product[]> {
     const products = await prisma.productEntity.findMany({
         include: {
             order: true,
         },
 
-        where: { type, orderId },
+        where: {
+            order: {
+                userId,
+            },
+
+            type,
+        },
     })
 
     return products
