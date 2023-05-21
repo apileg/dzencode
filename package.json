@@ -5,10 +5,12 @@
     "scripts": {
         "dev": "next dev",
         "build": "next build",
-        "start": "npx prisma migrate deploy && next start",
+        "start": "tsx ./prisma/migrate.ts && prisma db seed && next start",
         "lint": "next lint",
-        "seed-db": "tsx ./src/db-setup/seed/cli.ts",
         "test:api": "./tests/jest/integration/run.sh"
+    },
+    "prisma": {
+        "seed": "tsx ./prisma/seed.ts"
     },
     "dependencies": {
         "@prisma/client": "4.14.0",

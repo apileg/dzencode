@@ -34,7 +34,9 @@ export async function tryLogin({
         return { type: "emailNotFound" }
     }
 
-    if (!verifyPassword(password, model.passwordHash)) {
+    const passwordsMatch = await verifyPassword(password, model.passwordHash)
+
+    if (!passwordsMatch) {
         return { type: "wrongPassword" }
     }
 

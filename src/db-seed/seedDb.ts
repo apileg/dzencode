@@ -1,22 +1,36 @@
-import { floatToCents } from "@/bll/money-conversion"
-import { Product } from "@/model"
+import { Prisma, ProductEntity } from "@prisma/client"
 import { prisma } from "@/prisma"
-import { ProductEntity, Prisma } from "@prisma/client"
+import { hashPassword } from "@/bll/hashing"
+import { Product } from "@/model"
+import { floatToCents } from "@/bll/money-conversion"
+import { MockUser, users } from "./users"
 import { orders } from "./orders"
 import { products } from "./products"
-import { users, MockUser } from "./users"
-import { hashPassword } from "@/bll/hashing"
 
-export async function clearDb(tx: Prisma.TransactionClient) {
-    await tx.productEntity.deleteMany()
-    await tx.orderEntity.deleteMany()
-    await tx.userEntity.deleteMany()
+export async function seedDb() {
+    return await prisma.$transaction(async (tx) => {
+        const dbIsSeeded = await doAnyUsersExist(tx)
+
+        if (dbIsSeeded) {
+            return false
+        }
+
+        for (const user of users) {
+            await seedUser(tx, user)
+        }
+
+        return true
+    })
 }
 
-export async function seedDb(tx: Prisma.TransactionClient) {
-    for (const user of users) {
-        await seedUser(tx, user)
-    }
+async function doAnyUsersExist(tx: Prisma.TransactionClient) {
+    const rows = (await tx.$queryRaw`
+        select count(*) as usersCount 
+        from UserEntity
+    `) as any[]
+
+    const usersCount = rows[0]?.usersCount ?? 0
+    return usersCount > 0
 }
 
 async function seedUser(tx: Prisma.TransactionClient, user: MockUser) {

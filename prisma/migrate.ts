@@ -1,19 +1,17 @@
 import { $ } from "execa"
 
-async function migrateDbOrTimeout() {
-    const maxTries = 5
-    const tryDelayMs = 2000
+async function migrateOrTimeout() {
     let tries = 0
+    const maxTries = 5
+    const tryToMs = 2000
 
     while (true) {
         try {
-            await $`npx prisma migrate deploy`
+            await $({ stdio: "inherit" })`npx prisma migrate deploy`
             return
         } catch (error) {
-            if (!isPrismaDeployErrorCausedByDatabaseNotYetRunning(error)) {
-                console.error("Got unknown error: ")
+            if (!isErrorBecauseDbIsNotRunningYet(error)) {
                 console.dir(error)
-
                 process.exitCode = 1
                 return
             }
@@ -27,22 +25,19 @@ async function migrateDbOrTimeout() {
             return
         }
 
-        console.error(
-            `\`prisma deploy\` failed. Retrying after ${tryDelayMs}ms`
-        )
-        await delay(tryDelayMs)
+        await delay(tryToMs)
     }
 }
 
-function isPrismaDeployErrorCausedByDatabaseNotYetRunning(error: any) {
+function isErrorBecauseDbIsNotRunningYet(error: any) {
     const maybeStderr = error.stderr
     return typeof maybeStderr === "string" && maybeStderr.includes("P1001")
 }
 
 function delay(ms: number): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve, _reject) => {
         setTimeout(resolve, ms)
     })
 }
 
-migrateDbOrTimeout()
+migrateOrTimeout()

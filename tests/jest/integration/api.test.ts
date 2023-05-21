@@ -1,4 +1,3 @@
-import { clearDb, seedDb } from "@/db-seed/seedAndClear"
 import { prisma } from "@/prisma"
 import { NextApiRequest, NextApiResponse } from "next"
 
@@ -33,7 +32,6 @@ beforeAll(async () => {
 
 async function setupDb() {
     await prisma.$transaction(async (tx) => {
-        // await clearDb(tx)
         await seedDb(tx)
     })
 }

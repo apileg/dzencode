@@ -11,9 +11,9 @@ export async function getOrders(userId: number): Promise<Order[]> {
             sum(p.priceUsd) as totalUsd,
             sum(p.priceUah) as totalUah
         from
-            orderEntity as o
+            OrderEntity as o
         inner join
-            productEntity as p
+            ProductEntity as p
         on
             p.orderId = o.id
         where

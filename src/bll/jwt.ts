@@ -27,7 +27,7 @@ export function formJwtCookie(jwt: string): string {
     // And also see /SECURITY.md
     return (
         `id=${jwt}; Secure; HttpOnly; SameSite=Lax; Path=/;` +
-        `Domain=${process.env.DOMAIN}; Max-Age=${maxAgeSeconds};`
+        `Domain=${process.env.JWT_COOKIE_DOMAIN}; Max-Age=${maxAgeSeconds};`
     )
 }
 

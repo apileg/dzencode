@@ -10,3 +10,7 @@
 -   Unit test API
 -   Explain CSRF attack
 -   Pack all this into Docker (save dev deps into dev)
+
+# Maybe:
+
+-   Install typescript-eslint and enable all recommended rules (e.g. strict-boolean-expressions)
