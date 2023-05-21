@@ -1,5 +1,5 @@
 import { prisma } from "@/prisma"
-import { seedDb } from "./seedDb"
+import { seedDb } from "./seedAndClear"
 
 async function main() {
     try {

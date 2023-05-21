@@ -1,25 +1,85 @@
-// import { clearDb, seedDb } from "@/dal/seedDb"
-import productsTypes from "@/pages/api/products/types"
+import { clearDb, seedDb } from "@/db-seed/seedAndClear"
 import { prisma } from "@/prisma"
 import { NextApiRequest, NextApiResponse } from "next"
-import { createMocks } from "node-mocks-http"
 
-// beforeAll(async () => {
-//     await prisma.$transaction(async (tx) => {
-//         await clearDb(tx)
-//         await seedDb(tx)
-//     })
-// })
+import {
+    createMocks as doCreateMocks,
+    RequestOptions,
+    ResponseOptions,
+} from "node-mocks-http"
 
-test("GET products", async () => {
-    const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: "GET",
-        path: "/api/products/types",
-    })
+import postAuth from "@/pages/api/auth"
 
-    await productsTypes(req, res)
-    expect(res._getStatusCode()).toBe(200)
-    console.log(JSON.parse(res._getData()).length)
+import { products } from "@/db-seed/products"
+import { users } from "@/db-seed/users"
+
+function createMocks(
+    reqOptions?: RequestOptions | undefined,
+    resOptions?: ResponseOptions | undefined
+) {
+    return doCreateMocks<NextApiRequest, NextApiResponse>(
+        reqOptions,
+        resOptions
+    )
+}
+
+let jwt: string
+const user = users[0]
+
+beforeAll(async () => {
+    await setupDb()
+    jwt = await loginAndGetJwtCookie()
 })
 
+async function setupDb() {
+    await prisma.$transaction(async (tx) => {
+        await clearDb(tx)
+        await seedDb(tx)
+    })
+}
+
+async function loginAndGetJwtCookie(): Promise<string> {
+    const { req, res } = createMocks({
+        method: "POST",
+        path: "/api/auth",
+
+        body: {
+            email: user.email,
+            password: user.password,
+        },
+    })
+
+    await postAuth(req, res)
+
+    const status = res._getStatusCode()
+
+    if (status !== 200) {
+        throw new Error(`Got status: ${status}`)
+    }
+
+    const jwt = res.cookies["id"]?.value
+
+    if (!jwt) {
+        throw new Error("Server did not set `id` cookie")
+    }
+
+    return jwt
+}
+
 // test auth, cascade delete
+
+test("GET /api/products", async () => {
+    const { req, res } = createMocks({
+        method: "GET",
+        path: "/api/products",
+
+        cookies: {
+            id: jwt,
+        },
+    })
+
+    expect(res._getStatusCode()).toBe(200)
+
+    const returnedProducts = JSON.parse(res._getData())
+    expect(returnedProducts).toMatchObject(products)
+})

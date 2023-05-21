@@ -1,10 +1,11 @@
 import { floatToCents } from "@/bll/money-conversion"
 import { Product } from "@/model"
 import { prisma } from "@/prisma"
-import { UserEntity, ProductEntity, Prisma } from "@prisma/client"
+import { ProductEntity, Prisma } from "@prisma/client"
 import { orders } from "./orders"
 import { products } from "./products"
-import { getUsers } from "./getUsers"
+import { users, MockUser } from "./users"
+import { hashPassword } from "@/bll/hashing"
 
 export async function clearDb(tx: Prisma.TransactionClient) {
     await tx.productEntity.deleteMany()
@@ -13,19 +14,18 @@ export async function clearDb(tx: Prisma.TransactionClient) {
 }
 
 export async function seedDb(tx: Prisma.TransactionClient) {
-    await prisma.$transaction(async (tx) => {
-        for (const user of await getUsers()) {
-            await seedUser(tx, user)
-        }
-    })
+    for (const user of users) {
+        await seedUser(tx, user)
+    }
 }
 
-async function seedUser(
-    tx: Prisma.TransactionClient,
-    user: Omit<UserEntity, "id">
-) {
+async function seedUser(tx: Prisma.TransactionClient, user: MockUser) {
     const { id: userId } = await tx.userEntity.create({
-        data: user,
+        data: {
+            email: user.email,
+            passwordHash: await hashPassword(user.password),
+            avatarUrl: user.avatarUrl,
+        },
     })
 
     for (const order of orders) {
