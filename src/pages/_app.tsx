@@ -3,8 +3,9 @@ import "@/styles/globals.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import type { AppProps } from "next/app"
 import { useRouter } from "next/router"
+import { trpc } from "@/utils/trpc"
 
-export default function App({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps }: AppProps) {
     const router = useRouter()
     const queryClient = new QueryClient()
 
@@ -23,3 +24,5 @@ export default function App({ Component, pageProps }: AppProps) {
         </QueryClientProvider>
     )
 }
+
+export default trpc.withTRPC(App)

@@ -31,7 +31,8 @@ function handleGuest(request: NextRequest): NextResponse {
 
 function isPublicPath(path: string) {
     return (
-        ["/login", "/api/auth", "/favicon.ico"].includes(path) ||
+        ["/login", "/api/auth", "/favicon.ico", "/lorem"].includes(path) ||
+        path.startsWith("/api/trpc") ||
         path.startsWith("/_next")
     )
 }
