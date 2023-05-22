@@ -13,14 +13,7 @@ const handler: NextApiHandler = async (request, response) => {
         const result = await handlePostAuth(request)
 
         if (result.type === "error") {
-            response.status(400)
-
-            const body: PostAuthResponseBody = {
-                type: "error",
-                errors: result.errors,
-            }
-
-            response.json(body)
+            response.json(result)
             return
         }
 

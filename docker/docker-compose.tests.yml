@@ -21,5 +21,5 @@ services:
             - db
         environment:
             DATABASE_URL: "mysql://root@db/dzencode"
-        env_file:
-            - .env
+            JWT_COOKIE_DOMAIN: localhost
+            JWT_SECRET: secretdontreadit

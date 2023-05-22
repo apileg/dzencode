@@ -1,32 +1,21 @@
-FROM node:18-alpine AS base
-
-# Cache dependencies installation - takes a while
-FROM base as deps
-WORKDIR /app
+FROM node:18-alpine
 
 # To be safe, install this package  
 # See https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine
 RUN apk add --no-cache libc6-compat
 
-COPY package* ./
-RUN npm ci
-
-# Build the app and run it
-FROM base as main
-
-WORKDIR /
-COPY --from=deps /app .
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
 WORKDIR /app
 
+COPY package* . 
+RUN npm ci
+
 COPY . .
-COPY ./docker/.env .
 
 RUN npx prisma generate
 RUN npm run build
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
 
 RUN chown -R nextjs:nodejs /app/.next
 

@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { ProductsStore, useProductsStore } from "@/components/products/store"
 import { Product } from "@/model"
 import { renderHook, waitFor } from "@testing-library/react"
