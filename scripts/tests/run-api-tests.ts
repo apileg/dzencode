@@ -1,51 +1,74 @@
 import { $ } from "execa"
 import axios from "axios"
 import { retry } from "../retry"
-import { NEXT_APP_HOST, NEXT_APP_PORT } from "./api-tests-contants"
-
-const quiet = process.argv.includes("q") || process.argv.includes("quiet")
+import { NEXT_APP_HOST, NEXT_APP_PORT } from "./next-app-constants"
+import { prisma } from "@/prisma"
 
 const $stdio = $({ stdio: "inherit" })
-const $maybeStdio = $({ stdio: quiet ? undefined : "inherit" })
+const TESTS_DB_URL = "mysql://root@localhost:3307/tests"
 
 async function main() {
-    await withMySql(async () => {
-        await withNextApp(runTests)
-    })
+    await withTestsDb(() => withNextApp(runTests))
 }
 
-async function runTests() {
+async function withTestsDb(fn: () => Promise<void>) {
+    await createTestsDbWithRetries()
+
     try {
-        await $stdio`npx jest ./tests/jest/integration`
-    } catch {
-        process.exitCode = 1
+        await runMigrations()
+        await fn()
+    } finally {
+        await dropTestsDb()
     }
 }
 
-async function withMySql(fn: () => Promise<void>) {
-    const cwd = $maybeStdio({ cwd: __dirname })
-    await cwd`docker compose up -d`
+async function createTestsDbWithRetries() {
+    await retry({
+        fn: createTestsDb,
+        timeoutMs: 30_000,
+        retryIntervalMs: 3000,
+        timeoutMessage: (ms) => `Database connection failed after ${ms} ms`,
+    })
+}
 
-    const dbEnv = $maybeStdio({
+async function createTestsDb() {
+    try {
+        // Note: kind of tricky, but this line connects to `dzencode` database
+        // specified in `docker-compose.mysql.yml`. `dzencode` is created by
+        // default by `mysql` docker image
+
+        // Prisma cannot connect to MySQL with no database specified. We
+        // can always specify one of the system databases inside of MySQL
+        // if something changes
+
+        await prisma.$executeRaw`create database tests`
+        return true
+    } catch {
+        return false
+    }
+}
+
+async function runMigrations() {
+    const $migrate = $stdio({
         env: {
             ...process.env,
-            DATABASE_URL: "mysql://root@localhost:3307/tests",
+            DATABASE_URL: TESTS_DB_URL,
         },
     })
 
-    try {
-        await dbEnv`npm run migrate`
-        await dbEnv`npm run seed`
-        await fn()
-    } finally {
-        await cwd`docker compose down --volumes`
-    }
+    await $migrate`npx prisma migrate deploy`
+}
+
+async function dropTestsDb() {
+    await prisma.$executeRaw`drop database tests`
 }
 
 async function withNextApp(fn: () => Promise<void>) {
-    const portEnv = $maybeStdio({
+    const $next = $stdio({
         env: {
             ...process.env,
+
+            DATABASE_URL: TESTS_DB_URL,
 
             // Since tests use `127.0.0.1` (because axios breaks with `localhost`)
             // we need to use `127.0.0.1` as domain for JWT cookies
@@ -55,7 +78,7 @@ async function withNextApp(fn: () => Promise<void>) {
         },
     })
 
-    const nextApp = portEnv`npm run start`
+    let nextApp = $next`npm run start`
 
     try {
         await waitForApiToStart()
@@ -78,14 +101,22 @@ async function getIndexPage() {
     try {
         await axios.get(`http://${NEXT_APP_HOST}:${NEXT_APP_PORT}/`)
         return true
-    } catch (error) {
-        if (!quiet) {
-            const e = error as any
-            console.log(`API call error: ${e.message}`)
-        }
-
+    } catch (_error) {
         return false
     }
+}
+
+async function runTests() {
+    const $jest = $stdio({
+        env: {
+            ...process.env,
+            DATABASE_URL: TESTS_DB_URL,
+        },
+
+        reject: false,
+    })
+
+    await $jest`npx jest ./tests/jest/integration`
 }
 
 main()

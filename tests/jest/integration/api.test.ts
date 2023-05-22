@@ -2,21 +2,24 @@
  * @jest-environment node
  */
 
+import { expectedProductsCount, seedDb } from "@/db-seed/seedDb"
+import { Product } from "@/model"
 import { PostAuthResponseBody } from "@/pages/api/auth"
 import globalAxios, { Axios } from "axios"
 import { parse } from "set-cookie-parser"
-import { Product } from "@/model"
-import { products } from "@/db-seed/products"
 import { orders } from "@/db-seed/orders"
 
 import {
     NEXT_APP_HOST,
     NEXT_APP_PORT,
-} from "../../../scripts/tests/api-tests-contants"
-import { expectedProductsCount } from "@/db-seed/seedDb"
+} from "@/../scripts/tests/next-app-constants"
 
 globalAxios.defaults.baseURL = `http://${NEXT_APP_HOST}:${NEXT_APP_PORT}/`
 globalAxios.defaults.withCredentials = true
+
+beforeAll(async () => {
+    await seedDb()
+})
 
 describe("/api/auth", () => {
     test("incorrect email", async () => {
@@ -135,20 +138,14 @@ describe("data access", () => {
         expect(body.sort()).toMatchObject(expected.sort())
     })
 
-    test("users only seed their products in /api/order/id/products", async () => {
-        const response = await client.get("/api/orders")
-        const body = response.data as Product[]
+    test("users only see their products in /api/order/id/products", async () => {
+        for (let id = 1; id < orders.length; ++id) {
+            const response = await client.get(`/api/order/${id}/products`)
+            const body = response.data as Product[]
 
-        expect(areProductsOfUserA(body)).toBe(true)
-        expect(areProductsOfUserA(body)).toBe(true)
+            expect(areProductsOfUserA(body)).toBe(true)
+        }
     })
-
-    // async function getAllOrderIds(): Promise<number[]> {
-    //     const response = await client.get("/api/products")
-    //     const body = response.data as Product[]
-
-    //     const ids = body.map((p) => p.order.id)
-    // }
 
     function areProductsOfUserA(product: Product[]) {
         return product.every((p) => p.title.includes("of a@a.com"))

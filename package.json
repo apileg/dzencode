@@ -3,11 +3,12 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
+        "db": "docker compose -f ./docker/docker-compose.mysql.yml",
+        "db:d": "docker compose -f ./docker/docker-compose.mysql.yml up -d",
         "dev": "next dev",
         "lint": "next lint",
         "build": "next build",
         "start": "next start",
-        "start-in-docker": "npm run migrate && npm run seed && npm run start",
         "migrate": "tsx ./scripts/prisma/migrate.ts",
         "seed": "tsx ./scripts/prisma/seed.ts",
         "test:api": "tsx ./scripts/tests/run-api-tests.ts"

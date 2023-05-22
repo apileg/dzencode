@@ -3,10 +3,9 @@ version: "3.9"
 services:
     db:
         image: mysql:8.0.33
-        container_name: mysql-for-api-tests
-        restart: on-failure
+        restart: always
         ports:
-            - 3307:3306
+            - "3307:3306"
         environment:
             MYSQL_ALLOW_EMPTY_PASSWORD: yes
-            MYSQL_DATABASE: tests
+            MYSQL_DATABASE: dzencode

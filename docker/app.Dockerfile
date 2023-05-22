@@ -22,4 +22,4 @@ RUN chown -R nextjs:nodejs /app/.next
 USER nextjs
 
 ENV PORT 3000
-CMD ["npm", "run", "start-in-docker"]
+CMD npm run migrate && npm run seed && npm run start
