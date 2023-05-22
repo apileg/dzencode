@@ -1,6 +1,6 @@
 import { Product } from "@/model"
 
-const imageUrl = "/photos/takanaka.jpeg"
+export const imageUrl = "/photos/takanaka.jpeg"
 
 export const products: Product[] = [
     {

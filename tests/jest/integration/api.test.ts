@@ -7,11 +7,13 @@ import globalAxios, { Axios } from "axios"
 import { parse } from "set-cookie-parser"
 import { Product } from "@/model"
 import { products } from "@/db-seed/products"
+import { orders } from "@/db-seed/orders"
 
 import {
     NEXT_APP_HOST,
     NEXT_APP_PORT,
 } from "../../../scripts/tests/api-tests-contants"
+import { expectedProductsCount } from "@/db-seed/seedDb"
 
 globalAxios.defaults.baseURL = `http://${NEXT_APP_HOST}:${NEXT_APP_PORT}/`
 globalAxios.defaults.withCredentials = true
@@ -108,17 +110,47 @@ describe("middleware", () => {
     })
 })
 
-// describe("data access", () => {
-//     const client = globalAxios.create()
+describe("data access", () => {
+    const client = globalAxios.create()
 
-//     beforeAll(async () => {
-//         await login(client)
-//     })
+    beforeAll(async () => {
+        await login(client)
+    })
 
-//     test("users only see their products", async () => {
-//         const response = await client.get("/api/products")
+    test("users only see their products", async () => {
+        const response = await client.get("/api/products")
+        const body = response.data as Product[]
 
-//         const body = response.data as Product[]
-//         body.sort((a, b) => a.id - b.id)
-//     })
-// })
+        expect(body.length).toBe(expectedProductsCount)
+        expect(areProductsOfUserA(body)).toBe(true)
+        expect(areProductsOfUserA(body)).toBe(true)
+    })
+
+    test("users only see types of their orders", async () => {
+        const response = await client.get("/api/products/types")
+
+        const body = response.data as string[]
+        const expected = ["Type A", "Type B", "Type C", "Product of a@a.com"]
+
+        expect(body.sort()).toMatchObject(expected.sort())
+    })
+
+    test("users only seed their products in /api/order/id/products", async () => {
+        const response = await client.get("/api/orders")
+        const body = response.data as Product[]
+
+        expect(areProductsOfUserA(body)).toBe(true)
+        expect(areProductsOfUserA(body)).toBe(true)
+    })
+
+    // async function getAllOrderIds(): Promise<number[]> {
+    //     const response = await client.get("/api/products")
+    //     const body = response.data as Product[]
+
+    //     const ids = body.map((p) => p.order.id)
+    // }
+
+    function areProductsOfUserA(product: Product[]) {
+        return product.every((p) => p.title.includes("of a@a.com"))
+    }
+})
