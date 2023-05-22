@@ -80,7 +80,7 @@ async function seedUser(tx: Prisma.TransactionClient, user: MockUser) {
     }
 }
 
-function productModelToCreateFields(
+export function productModelToCreateFields(
     model: Product,
     orderId: number
 ): Omit<ProductEntity, "id"> {
