@@ -9,7 +9,6 @@
 
 -   Unit test API
 -   Explain CSRF attack
--   Pack all this into Docker (save dev deps into dev)
 
 # Maybe:
 

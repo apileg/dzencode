@@ -5,7 +5,9 @@ async function main() {
     try {
         const seeded = await seedDb()
 
-        if (!seeded) {
+        if (seeded) {
+            console.log("Seeded db")
+        } else {
             console.error("Note: database was already seeded")
         }
     } finally {

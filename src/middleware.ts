@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { verifyJwt } from "./bll/jwt"
+import { PlainUser } from "./model"
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
     const jwtCookie = request.cookies.get("id")
@@ -39,7 +40,7 @@ function isPublicPath(path: string) {
 function handleLoggedIn(request: NextRequest): NextResponse {
     const { pathname } = request.nextUrl
 
-    if (pathname === "/login") {
+    if (pathname === "/login" || pathname === "/api/auth") {
         return redirectToPath(request, "/")
     }
 

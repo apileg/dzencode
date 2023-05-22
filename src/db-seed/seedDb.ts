@@ -2,7 +2,6 @@ import { Prisma, ProductEntity } from "@prisma/client"
 import { prisma } from "@/prisma"
 import { hashPassword } from "@/bll/hashing"
 import { Product } from "@/model"
-import { floatToCents } from "@/bll/money-conversion"
 import { MockUser, users } from "./users"
 import { orders } from "./orders"
 import { products } from "./products"
@@ -68,9 +67,6 @@ function productModelToCreateFields(
     delete obj.id
     delete obj.order
     obj.orderId = orderId
-
-    obj.priceUsd = floatToCents(model.priceUsd)
-    obj.priceUah = floatToCents(model.priceUah)
 
     return obj
 }

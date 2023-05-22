@@ -11,9 +11,12 @@ export async function retry({
     retryIntervalMs,
     timeoutMessage,
 }: RetryOptions) {
-    let elapsedMs = 0
+    let elapsedMs = retryIntervalMs
 
     while (true) {
+        await delay(retryIntervalMs)
+        elapsedMs += retryIntervalMs
+
         const ok = await fn()
 
         if (ok) {
@@ -23,9 +26,6 @@ export async function retry({
         if (elapsedMs >= timeoutMs) {
             throw new Error(timeoutMessage(timeoutMs))
         }
-
-        await delay(retryIntervalMs)
-        elapsedMs += retryIntervalMs
     }
 }
 
