@@ -1,13 +1,14 @@
 import { $ } from "execa"
 
 async function migrateOrTimeout() {
-    let tries = 0
-    const maxTries = 5
-    const tryToMs = 2000
+    let elapsedMs = 0
+    const timeoutMs = 30_000
+    const tryDelayMs = 2000
 
     while (true) {
         try {
-            await $({ stdio: "inherit" })`npx prisma migrate deploy`
+            const { stdout } = await $`npx prisma migrate deploy`
+            console.log(stdout)
             return
         } catch (error) {
             if (!isErrorBecauseDbIsNotRunningYet(error)) {
@@ -17,21 +18,25 @@ async function migrateOrTimeout() {
             }
         }
 
-        ++tries
-
-        if (tries >= maxTries) {
-            console.error(`Database connection failed after ${tries} tries`)
+        if (elapsedMs >= timeoutMs) {
+            console.error(`Database connection failed after ${elapsedMs} ms`)
             process.exitCode = 1
             return
         }
 
-        await delay(tryToMs)
+        await delay(tryDelayMs)
+        elapsedMs += tryDelayMs
     }
 }
 
 function isErrorBecauseDbIsNotRunningYet(error: any) {
     const maybeStderr = error.stderr
-    return typeof maybeStderr === "string" && maybeStderr.includes("P1001")
+
+    if (typeof maybeStderr !== "string") {
+        return false
+    }
+
+    return maybeStderr.includes("P1001") || maybeStderr.includes("P1017")
 }
 
 function delay(ms: number): Promise<void> {

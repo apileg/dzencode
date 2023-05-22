@@ -5,9 +5,11 @@
     "scripts": {
         "dev": "next dev",
         "build": "next build",
-        "start": "tsx ./prisma/migrate.ts && prisma db seed && next start",
+        "start": "migrate && seed && next start",
+        "migrate": "tsx ./prisma/migrate.ts",
+        "seed": "prisma db seed",
         "lint": "next lint",
-        "test:api": "./tests/jest/integration/run.sh"
+        "test:api": "tsx ./tests/jest/integration/run.ts"
     },
     "prisma": {
         "seed": "tsx ./prisma/seed.ts"
