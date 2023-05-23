@@ -33,3 +33,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Secrets of the app container
+/docker/.env
+
+# Image builds
+/docker/*.tar

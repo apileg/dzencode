@@ -11,9 +11,7 @@ services:
             MYSQL_DATABASE: dzencode
 
     app:
-        build:
-            context: ..
-            dockerfile: "./docker/app.Dockerfile"
+        image: docker-app
         restart: always
         ports:
             - "3001:3001"
