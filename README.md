@@ -99,7 +99,7 @@ npm run dev
 -   SSR app: Next.js with pages router
 -   CSS: Tailwind
 -   Client-side logic:
-    -   `zustand` (see `Why not Redux` below)
+    -   `zustand` (see [Why not Redux](#why-not-redux) below)
     -   TanStack Query (React Query) for data fetching
 -   Database access: Prisma + MySQL
 -   Web sockets: socket.io and socket-io.client
@@ -266,3 +266,18 @@ I've used special attributes on cookie to make it more secure:
 At the moment **there's no protection against CSRF on GET routes**.
 **However**, this is not an issue, because `GET` requests in this app don't mutate
 state
+
+# Why not Redux
+
+## Technical part
+
+Reasons why I have chosen zustand over redux with next-redux-wrapper are:
+
+-   Simplicity and Less Boilerplate: zustand offers a simpler and more concise API compared to Redux. With zustand, you don't need to define actions, reducers, or switch statements. It uses a function-based approach, allowing you to directly update the state using simple JavaScript functions.
+-   Fewer Dependencies: zustand has minimal dependencies, often requiring only a few kilobytes of code. In contrast, Redux relies on additional middleware, such as Redux Thunk or Redux Saga, for handling asynchronous actions. zustand includes built-in support for async/await, making it easier to handle asynchronous logic without the need for extra dependencies.
+-   Performance: zustand provides a lightweight state management solution with optimized reactivity. It leverages React's built-in useContext and useReducer hooks, resulting in efficient updates and rendering optimizations. Redux, on the other hand, introduces more overhead due to its centralized store and immutability requirements.
+-   Server-Side Rendering (SSR) and Hydration: zustand seamlessly integrates with server-side rendering frameworks like Next.js, offering straightforward handling of the HYDRATE event. This ensures the proper synchronization of state between the server and the client, simplifying the SSR process. Redux, while compatible with SSR, requires additional configuration and middleware to handle hydration effectively.
+
+## Problematic part
+
+I attempt to pass data from the orders file to the redux store via getServerSideProps and encountered an issue with the next-redux-wrapper library. The purpose was to immediately load the order list during server-side rendering. However, the next-redux-wrapper failed to catch the HYDRATE event, which prevented the proper synchronization of the state between the server and the client. [See commit.](https://github.com/apileg/dzencode/commit/7df20c57cebf3df66fe5ae0439ab936263872a5d)
