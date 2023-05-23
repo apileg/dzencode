@@ -1,31 +1,167 @@
-## Query 1
+# Delete a product
 
-Get all orders + compute products count and total price
+Prisma:
+
+```ts
+async function deleteProduct(id: number): Promise<void> {
+    await prisma.productEntity.delete({ where: { id } })
+}
+```
+
+SQL:
+
+```sql
+delete from ProductEntity where id = ?
+```
+
+## Delete an order
+
+Prisma:
+
+```ts
+async function deleteOrder(id: number): Promise<void> {
+    await prisma.orderEntity.delete({ where: { id } })
+}
+```
+
+SQL:
+
+```sql
+delete from OrderEntity where id = ?
+```
+
+## Check if user owns given order
+
+Prisma:
+
+```ts
+const order = await prisma.orderEntity.findFirst({
+    select: {
+        userId: true,
+    },
+
+    where: {
+        id: orderId,
+    },
+})
+
+return order?.userId === userId
+```
+
+SQL:
+
+```sql
+select userId from OrderEntity where id = ?
+```
+
+## Check if user owns given product
+
+Prisma:
+
+```ts
+const product = await prisma.productEntity.findFirst({
+    select: {
+        order: {
+            select: {
+                userId: true,
+            },
+        },
+    },
+
+    where: {
+        id: productId,
+    },
+})
+
+return product?.order.userId === userId
+```
+
+SQL (Prisma performs it this way):
+
+```sql
+orderId = select orderId from ProductEntity where id = ?
+userId = select userId from OrderEntity where id = ?
+```
+
+This query can also be written using `JOIN`s:
 
 ```sql
 select
-    o.id,
-    o.title,
-    o.createdAt,
-    count(p.id) as productsCount,
-    sum(p.priceUsd) as totalUsd,
-    sum(p.priceUah) as totalUah
+    o.userId as userId
 from
-    orderEntity as o
+    ProductEntity as p
 inner join
-    productEntity as p
+    OrderEntity as o
 on
     p.orderId = o.id
-group by
-    o.id
+where
+    p.id = ?
 ```
 
-## Query 2
+## Select all orders of the user
 
-Get all products together with their orders
-(include order id, title and createdAt)
+Prisma (SQL is embedded here):
 
-Prisma code:
+```ts
+const entities = (await prisma.$queryRaw`
+        select
+            o.id,
+            o.title,
+            o.createdAt,
+            count(p.id) as productsCount,
+            sum(p.priceUsd) as totalUsd,
+            sum(p.priceUah) as totalUah
+        from
+            OrderEntity as o
+        inner join
+            ProductEntity as p
+        on
+            p.orderId = o.id
+        where
+            o.userId = ${userId}
+        group by
+            o.id
+    `) as any[]
+
+const orders = entities.map((e) => ({
+    ...e,
+
+    // count() fields have bigint type for some reason
+    productsCount: Number(e.productsCount),
+    totalUsd: Number(e.totalUsd),
+    totalUah: Number(e.totalUah),
+}))
+
+return orders
+```
+
+## Select ids of all orders of the user
+
+Prisma:
+
+```ts
+const rows = await tx.orderEntity.findMany({
+    select: {
+        id: true,
+    },
+
+    where: {
+        userId,
+    },
+})
+
+return rows.map((r) => r.id)
+```
+
+SQL:
+
+```sql
+select id from OrderEntity where userId = ?
+```
+
+## Select products of the user filtered by type
+
+Prisma:
 
 ```ts
 const products = await prisma.productEntity.findMany({
@@ -33,79 +169,110 @@ const products = await prisma.productEntity.findMany({
         order: true,
     },
 
-    where: { type },
+    where: {
+        order: {
+            userId,
+        },
+
+        type,
+    },
 })
+
+return products
 ```
 
-Prisma performs this query as two separate queries under the hood:
-
-```sql
-select *
-from productEntity;
-
-select *
-from orderEntity where id in (?, ?, ?, ...);
-```
-
-`(?, ?, ?, ...)` part is replaced by ids from `orderId` column returned
-from the first query
-
-Optionally, this query filters products by their type:
-
-```sql
-select *
-from productEntity
-where type = ?
-```
-
-This query could have been written using JOIN:
+SQL:
 
 ```sql
 select *
 from
-    productsEntity as p
+    ProductEntity as p
 inner join
-    orderEntity as o
+    OrderEntity as o
 on
     p.orderId = o.id
 where
+    p.userId = ?
+and
     p.type = ?
 ```
 
-## Query 3
+## Select all products of an order
 
-Get distinct types of all existing products
-
-Prisma code:
+Prisma:
 
 ```ts
-const rows = await prisma.productEntity.findMany({
+const products = await prisma.productEntity.findMany({
+    include: {
+        order: true,
+    },
+
+    where: {
+        orderId,
+    },
+})
+
+return products
+```
+
+SQL:
+
+```sql
+select *
+from
+    ProductEntity as p
+inner join
+    OrderEntity as o
+on
+    p.orderId = o.id
+where
+    o.id = ?
+```
+
+## Select all product types of the user
+
+Prisma:
+
+```ts
+const rows = await tx.productEntity.findMany({
     select: {
         type: true,
+    },
+
+    where: {
+        orderId: {
+            in: orderIds,
+        },
     },
 
     distinct: ["type"],
 })
 
-return rows.map((t) => t.type)
+return rows.map((r) => r.type)
 ```
 
 SQL:
 
 ```sql
-select distinct `type` from productEntity
+select distinct `type`
+from ProductEntity
+where orderId IN (?, ?, ?, ...)
 ```
 
-## Query 4
+## Select user details (used when logging in)
 
-Get all products of the order
-
-Prisma code:
+Prisma:
 
 ```ts
-const products = await prisma.productEntity.findMany({
+const model = await prisma.userEntity.findUnique({
+    select: {
+        id: true,
+        avatarUrl: true,
+        passwordHash: true,
+    },
+
     where: {
-        orderId: id,
+        email,
     },
 })
 ```
@@ -113,7 +280,12 @@ const products = await prisma.productEntity.findMany({
 SQL:
 
 ```sql
-select *
-from productEntity
-where p.orderId = ?
+select
+    id,
+    avatarUrl,
+    passwordHash
+from
+    UserEntity
+where
+    email = ?
 ```

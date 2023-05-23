@@ -24,7 +24,7 @@ export async function verifyJwt(jwt: string): Promise<PlainUser> {
 
 export function formJwtCookie(jwt: string): string {
     // See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
-    // And also see /SECURITY.md
+
     return (
         `id=${jwt}; Secure; HttpOnly; SameSite=Lax; Path=/;` +
         `Domain=${process.env.JWT_COOKIE_DOMAIN}; Max-Age=${maxAgeSeconds};`
