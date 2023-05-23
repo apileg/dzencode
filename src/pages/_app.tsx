@@ -14,7 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
     // https://github.com/vercel/next.js/discussions/37311#discussioncomment-2851217
 
     if (!["/404", "/login"].includes(router.pathname)) {
-        content = <Layout>{content}</Layout>
+        content = <Layout avatarUrl={pageProps.avatarUrl}>{content}</Layout>
     }
 
     return (

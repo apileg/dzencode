@@ -23,6 +23,7 @@ export const getServerSideProps: GetServerSideProps<OrderPageProps> = async (
 
     return {
         props: {
+            avatarUrl: user.avatarUrl,
             initialOrders: orders,
         },
     }

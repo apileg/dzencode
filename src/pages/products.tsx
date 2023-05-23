@@ -21,6 +21,7 @@ export const getServerSideProps: GetServerSideProps<ProductsPageProps> = async (
 
     return {
         props: {
+            avatarUrl: user.avatarUrl,
             initialProducts: products,
             initialTypes: types,
         },

@@ -4,7 +4,8 @@ export function wrapHandler(fn: NextApiHandler): NextApiHandler {
     return async (request, response) => {
         try {
             await fn(request, response)
-        } catch {
+        } catch (error) {
+            console.dir(error)
             response.status(500)
         } finally {
             response.end()

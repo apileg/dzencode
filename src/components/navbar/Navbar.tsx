@@ -1,17 +1,14 @@
-import React, { useState } from "react"
-import { ReactNode } from "react"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { useQuery } from "@tanstack/react-query"
-import { PlainUser } from "@/model"
+import { ReactNode } from "react"
 
-const Navbar = () => {
+const Navbar = ({ avatarUrl }: { avatarUrl: string }) => {
     return (
         <div className="w-full h-full flex flex-col text-center shadow-2xl">
             <div className="basis-[4em] grow-0 shrink-1"></div>
 
             <div className="px-[2em] shrink-1">
-                <Avatar />
+                <Avatar avatarUrl={avatarUrl} />
             </div>
 
             <div className="basis-20 grow-0 shrink-1"></div>
@@ -27,27 +24,10 @@ const Navbar = () => {
 
 export default Navbar
 
-const Avatar = () => {
-    const { data: user } = useQuery({
-        queryKey: ["me"],
-
-        queryFn: async () => {
-            const response = await fetch("/api/me", {
-                credentials: "include",
-            })
-
-            const user = (await response.json()) as PlainUser
-            return user
-        },
-    })
-
+const Avatar = ({ avatarUrl }: { avatarUrl: string }) => {
     const avatar = (
         // eslint-disable-next-line @next/next/no-img-element
-        <img
-            className="rounded-full"
-            src={user?.avatarUrl ?? ""}
-            alt="Avatar"
-        />
+        <img className="rounded-full" src={avatarUrl} alt="Avatar" />
     )
 
     return (
