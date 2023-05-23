@@ -66,7 +66,7 @@ npm run dev
 
 # Overview of functions
 
-![alt text](./docs/app.gif)
+![GIF demonstrating the features](./docs/app.gif)
 
 -   `/orders` page with listing or orders
 
@@ -263,6 +263,6 @@ I've used special attributes on cookie to make it more secure:
 -   I've set `Secure` and `HttpOnly`
 -   I've set `SameSite: Lax`
 
-At the moment **there's not protection against CSRF on GET routes**.
-This is not an issue, because `GET` requests in this app don't mutate
+At the moment **there's no protection against CSRF on GET routes**.
+**However**, this is not an issue, because `GET` requests in this app don't mutate
 state
