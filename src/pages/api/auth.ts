@@ -2,35 +2,32 @@ import { formJwtCookie, signJwt } from "@/bll/jwt"
 import { tryLogin } from "@/dal/tryLogin"
 import { NextApiHandler, NextApiRequest } from "next"
 import { z, ZodError } from "zod"
+import { wrapHandler } from "./_utils/wrapHandler"
 
-const handler: NextApiHandler = async (request, response) => {
-    try {
-        if (request.method !== "POST") {
-            response.status(404)
-            return
-        }
-
-        const result = await handlePostAuth(request)
-
-        if (result.type === "error") {
-            response.json(result)
-            return
-        }
-
-        if (result.type === "ok") {
-            response.setHeader("Set-Cookie", formJwtCookie(result.jwt))
-
-            const body: PostAuthResponseBody = {
-                type: "ok",
-            }
-
-            response.json(body)
-            return
-        }
-    } finally {
-        response.end()
+const handler: NextApiHandler = wrapHandler(async (request, response) => {
+    if (request.method !== "POST") {
+        response.status(404)
+        return
     }
-}
+
+    const result = await handlePostAuth(request)
+
+    if (result.type === "error") {
+        response.json(result)
+        return
+    }
+
+    if (result.type === "ok") {
+        response.setHeader("Set-Cookie", formJwtCookie(result.jwt))
+
+        const body: PostAuthResponseBody = {
+            type: "ok",
+        }
+
+        response.json(body)
+        return
+    }
+})
 
 export default handler
 

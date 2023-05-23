@@ -5,17 +5,12 @@
 import { ProductsStore, useProductsStore } from "@/components/products/store"
 import { Product } from "@/model"
 import { renderHook, waitFor } from "@testing-library/react"
-import fetchMock from "fetch-mock-jest"
 import { act } from "react-dom/test-utils"
 
 const initialState = useProductsStore.getState()
 
 beforeEach(() => {
     useProductsStore.setState(initialState)
-})
-
-afterEach(() => {
-    fetchMock.restore()
 })
 
 const renderUseProductsStore = () => renderHook(() => useProductsStore())

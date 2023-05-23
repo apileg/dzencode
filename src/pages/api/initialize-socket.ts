@@ -1,31 +1,28 @@
 import { NextApiHandler } from "next"
 import { Server, Socket } from "socket.io"
+import { wrapHandler } from "./_utils/wrapHandler"
 
-const handler: NextApiHandler = async (request, response) => {
-    try {
-        if (request.method !== "POST") {
-            response.status(400)
-            return
-        }
-
-        const server = (response.socket as any).server
-        if (server.io) {
-            return
-        }
-
-        const io = new Server(server, {
-            path: "/api/socket",
-            addTrailingSlash: false,
-            pingTimeout: 2000,
-            pingInterval: 1000,
-        })
-
-        setupServer(io)
-        server.io = io
-    } finally {
-        response.end()
+const handler: NextApiHandler = wrapHandler(async (request, response) => {
+    if (request.method !== "POST") {
+        response.status(400)
+        return
     }
-}
+
+    const server = (response.socket as any).server
+    if (server.io) {
+        return
+    }
+
+    const io = new Server(server, {
+        path: "/api/socket",
+        addTrailingSlash: false,
+        pingTimeout: 2000,
+        pingInterval: 1000,
+    })
+
+    setupServer(io)
+    server.io = io
+})
 
 export default handler
 

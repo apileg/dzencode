@@ -7,19 +7,25 @@ import { products, imageUrl } from "./products"
 import { MockUser, users } from "./users"
 
 export async function seedDb() {
-    return await prisma.$transaction(async (tx) => {
-        const dbIsSeeded = await doAnyUsersExist(tx)
+    return await prisma.$transaction(
+        async (tx) => {
+            const dbIsSeeded = await doAnyUsersExist(tx)
 
-        if (dbIsSeeded) {
-            return false
+            if (dbIsSeeded) {
+                return false
+            }
+
+            for (const user of users) {
+                await seedUser(tx, user)
+            }
+
+            return true
+        },
+        {
+            maxWait: 30000,
+            timeout: 60000,
         }
-
-        for (const user of users) {
-            await seedUser(tx, user)
-        }
-
-        return true
-    })
+    )
 }
 
 async function doAnyUsersExist(tx: Prisma.TransactionClient) {

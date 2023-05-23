@@ -5,7 +5,6 @@
 import { OrdersStore, useOrdersStore } from "@/components/order/store"
 import { Order, Product } from "@/model"
 import { act, renderHook, waitFor } from "@testing-library/react"
-import fetchMock from "fetch-mock-jest"
 
 // Clear Zustand state before each test
 // Not like in docs!
@@ -15,10 +14,6 @@ const initialState = useOrdersStore.getState()
 
 beforeEach(() => {
     useOrdersStore.setState(initialState)
-})
-
-afterEach(() => {
-    fetchMock.restore()
 })
 
 // Note: you must wrap `useOrdersStore` in lambda,
