@@ -8,8 +8,16 @@ You can run the whole project using **Docker**:
 npm run up
 ```
 
-The app will be available at `http://localhost:3001`. There are two built-in
-users on the site, one of them is a jazz guitarist. **To login**, use these credentials:
+The app will be available at `http://localhost:3001`. Note that I didn't purchase
+HTTPS certificate, and instead generated a **self-signed one**. This means that
+the website is vulnerable to man-in-the-middle attacks, but it's not essential
+for purposes of this task
+
+Browser will prompt you about the self-signed certificate. Each browser
+usually have some way to bypass. Bypass this prompt and continue to the site
+
+There are two built-in users on the site, one of them is a jazz guitarist.
+**To login**, use these credentials:
 
 ```
 a@a.com
@@ -115,6 +123,10 @@ npm run dev
     -   Unit tests of hooks: React Testing Library
     -   API + DB integration tests:
         -   `jest`, `axios` for requests, dockerized MySQL
+-   Deployment:
+    -   This site is deployed to a Linux server that runs `docker compose up -d`
+    -   Since [Next.js has no way of configuring HTTPS without using custom server](https://github.com/vercel/next.js/discussions/10935), this site runs behind Nginx that has HTTPS
+        configured
 
 # Details
 
@@ -161,7 +173,7 @@ To run api (integration) tests:
 npm run test:api
 ```
 
-## DB
+## Database
 
 ### Schema
 
@@ -205,6 +217,10 @@ erDiagram
 
 ```
 
+### Dump
+
+Link to the [database dump file](./docs/dzencode.sql)
+
 ### Queries
 
 See detailed description of SQL queries, see [this file](./docs/queries.md)
@@ -222,8 +238,9 @@ See detailed description of SQL queries, see [this file](./docs/queries.md)
     -   `db:start` - run MySQL docker container on port 330**7**
     -   `db:stop` - stop the MySQL container
     -   `db:migrate` - connect to the DB specified in `.env` in `DATABASE_URL` and run migrations (bootstrap schema)
-    -   `db:seed` connect to database like `db:migrate`, and fill it with mock
+    -   `db:seed` - connect to database like `db:migrate`, and fill it with mock
         data
+    -   `db:dump` - create dump of dzencode database
     -   `db:setup` - runs both `db:migrate` and `db:seed`
     -   `db` - shortcut for `docker compose -f /path/to/mysql/compose.yml`. Can be used like `npm run db up --build --force-recreate`
 -   `test:unit` and `test:api` - described above
@@ -273,11 +290,11 @@ state
 
 Reasons why I have chosen zustand over redux with next-redux-wrapper are:
 
--   Simplicity and Less Boilerplate: zustand offers a simpler and more concise API compared to Redux. With zustand, you don't need to define actions, reducers, or switch statements. It uses a function-based approach, allowing you to directly update the state using simple JavaScript functions.
--   Fewer Dependencies: zustand has minimal dependencies, often requiring only a few kilobytes of code. In contrast, Redux relies on additional middleware, such as Redux Thunk or Redux Saga, for handling asynchronous actions. zustand includes built-in support for async/await, making it easier to handle asynchronous logic without the need for extra dependencies.
--   Performance: zustand provides a lightweight state management solution with optimized reactivity. It leverages React's built-in useContext and useReducer hooks, resulting in efficient updates and rendering optimizations. Redux, on the other hand, introduces more overhead due to its centralized store and immutability requirements.
--   Server-Side Rendering (SSR) and Hydration: zustand seamlessly integrates with server-side rendering frameworks like Next.js, offering straightforward handling of the HYDRATE event. This ensures the proper synchronization of state between the server and the client, simplifying the SSR process. Redux, while compatible with SSR, requires additional configuration and middleware to handle hydration effectively.
+-   Simplicity and Less Boilerplate: zustand offers a simpler and more concise API compared to Redux. With zustand, you don't need to define actions, reducers, or switch statements. It uses a function-based approach, allowing you to directly update the state using simple JavaScript functions
+-   Fewer Dependencies: zustand has minimal dependencies, often requiring only a few kilobytes of code. In contrast, Redux relies on additional middleware, such as Redux Thunk or Redux Saga, for handling asynchronous actions. zustand includes built-in support for async/await, making it easier to handle asynchronous logic without the need for extra dependencies
+-   Performance: zustand provides a lightweight state management solution with optimized reactivity. It leverages React's built-in useContext and useReducer hooks, resulting in efficient updates and rendering optimizations. Redux, on the other hand, introduces more overhead due to its centralized store and immutability requirements
+-   Server-Side Rendering (SSR) and Hydration: zustand seamlessly integrates with server-side rendering frameworks like Next.js, offering straightforward handling of the HYDRATE event. This ensures the proper synchronization of state between the server and the client, simplifying the SSR process. Redux, while compatible with SSR, requires additional configuration and middleware to handle hydration effectively
 
 ## Problematic part
 
-I attempt to pass data from the orders file to the redux store via getServerSideProps and encountered an issue with the next-redux-wrapper library. The purpose was to immediately load the order list during server-side rendering. However, the next-redux-wrapper failed to catch the HYDRATE event, which prevented the proper synchronization of the state between the server and the client. [See commit.](https://github.com/apileg/dzencode/commit/7df20c57cebf3df66fe5ae0439ab936263872a5d)
+I attempt to pass data from the orders file to the redux store via getServerSideProps and encountered an issue with the next-redux-wrapper library. The purpose was to immediately load the order list during server-side rendering. However, the next-redux-wrapper failed to catch the HYDRATE event, which prevented the proper synchronization of the state between the server and the client. [See commit](https://github.com/apileg/dzencode/commit/7df20c57cebf3df66fe5ae0439ab936263872a5d)

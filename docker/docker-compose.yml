@@ -16,7 +16,7 @@ services:
             dockerfile: ./docker/app.Dockerfile
         restart: always
         ports:
-            - "3001:3001"
+            - 3001
         depends_on:
             - db
         environment:
@@ -24,3 +24,12 @@ services:
             DATABASE_URL: "mysql://root@db/dzencode"
         env_file:
             - .env
+
+    nginx:
+        build:
+            context: .
+            dockerfile: ./nginx.Dockerfile
+        ports:
+            - ${NGINX_PORT:-443}:3001
+        depends_on:
+            - app

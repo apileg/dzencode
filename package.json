@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "up": "cd ./docker && docker-compose up",
+        "up": "cd ./docker && NGINX_PORT=3001 docker-compose up",
         "down-all": "cd ./docker && docker-compose down --volumes --rmi all",
         "down": "cd ./docker && docker-compose down --volumes --rmi local",
         "dev": "next dev",
@@ -16,10 +16,12 @@
         "db:stop": "npm run db down",
         "db:seed": "tsx ./scripts/db/seed.ts",
         "db:migrate": "tsx ./scripts/db/migrate.ts",
+        "db:dump": "mysqldump dzencode --host 127.0.0.1 --port 3307 --no-data > dzencode.sql",
         "docker:build": "cd ./docker && docker-compose build app",
         "docker:save": "docker save docker-app > ./docker/app.tar",
         "test:api": "tsx ./scripts/tests/run-api-tests.ts",
-        "test:unit": "jest ./tests/jest/unit"
+        "test:unit": "jest ./tests/jest/unit",
+        "https": "tsx ./scripts/https.ts"
     },
     "dependencies": {
         "@prisma/client": "4.14.1",
