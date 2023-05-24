@@ -31,6 +31,7 @@ services:
             dockerfile: ./nginx.Dockerfile
         restart: always
         ports:
-            - ${NGINX_PORT:-443}:443
+            - 80:3001
+            - 443:3002
         depends_on:
             - app
