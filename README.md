@@ -247,6 +247,8 @@ See detailed description of SQL queries, see [this file](./docs/queries.md)
     -   `db:setup` - runs both `db:migrate` and `db:seed`
     -   `db` - shortcut for `docker compose -f /path/to/mysql/compose.yml`. Can be used like `npm run db up --build --force-recreate`
 -   `test:unit` and `test:api` - described above
+-   `https` - generate self-signed HTTPS certificate at `./docker/https`
+-   `copy-env` - copy `.env.sample` to `.env`, used in `up`
 
 ## Security
 

@@ -3,7 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "up": "cd ./docker && NGINX_PORT=3001 docker-compose up",
+        "up": "npm run copy-env && cd ./docker && NGINX_PORT=3001 docker-compose up",
+        "copy-env": "cp ./docker/.env.sample ./docker/.env",
         "down-all": "cd ./docker && docker-compose down --volumes --rmi all",
         "down": "cd ./docker && docker-compose down --volumes --rmi local",
         "dev": "next dev",
