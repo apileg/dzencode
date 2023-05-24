@@ -1,20 +1,12 @@
-# Running
+# Opening the website online
 
-## Using docker
+This website is available at `https://194.61.52.204`. Note that I haven't
+purchased an HTTPS certificate. Instead, I've used a self-signed one. Browser
+will warn you about potentially unsafe website, but the warning is caused
+by HTTPS. You can safely skip it
 
-You can run the whole project using **Docker**:
-
-```
-npm run up
-```
-
-The app will be available at `http://localhost:3001`. Note that I didn't purchase
-HTTPS certificate, and instead generated a **self-signed one**. This means that
-the website is vulnerable to man-in-the-middle attacks, but it's not essential
-for purposes of this task
-
-Browser will prompt you about the self-signed certificate. Each browser
-usually have some way to bypass. Bypass this prompt and continue to the site
+> Using self-signed certificate means that the site is vulnerable to MITM
+> attacks. This is not essential for purposes of this task
 
 There are two built-in users on the site, one of them is a jazz guitarist.
 **To login**, use these credentials:
@@ -29,7 +21,18 @@ takanaka@seychelles.com
 goblins
 ```
 
-To **turn off** the whole application use:
+# Running locally
+
+## Using docker
+
+You can run the whole project using **Docker**:
+
+```
+npm run up
+```
+
+The app will be available at `http://localhost:3001`. To **turn off** the
+whole application use:
 
 ```
 npm run down

@@ -29,6 +29,7 @@ services:
         build:
             context: .
             dockerfile: ./nginx.Dockerfile
+        restart: always
         ports:
             - ${NGINX_PORT:-443}:3001
         depends_on:
