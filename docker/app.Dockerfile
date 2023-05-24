@@ -6,12 +6,10 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-COPY package* . 
-RUN npm ci
-
 COPY . .
+RUN npm install
 
 RUN npx prisma generate
 RUN npm run build
 
-CMD npm run migrate && npm run seed && npm run start
+CMD npm run db:migrate && npm run db:seed && npm run start
