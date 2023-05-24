@@ -13,11 +13,19 @@ There are two built-in users on the site, one of them is a jazz guitarist.
 
 ```
 a@a.com
-password
 ```
 
 ```
+password
+```
+
+#
+
+```
 takanaka@seychelles.com
+```
+
+```
 goblins
 ```
 
@@ -31,8 +39,7 @@ You can run the whole project using **Docker**:
 npm run up
 ```
 
-The app will be available at [`http://localhost:3001`](http://localhost:3001). To **turn off** the
-whole application use:
+The app will be available at [`http://localhost:3001`](http://localhost:3001). To **turn off** the whole application use:
 
 ```
 npm run down
@@ -66,6 +73,9 @@ To start the app, use
 
 ```
 npm run build
+```
+
+```
 npm run start
 ```
 
@@ -167,13 +177,17 @@ Here's a diagram showing which tests cover which parts of the system:
 To run unit tests:
 
 ```
+
 npm run test:unit
+
 ```
 
 To run api (integration) tests:
 
 ```
+
 npm run test:api
+
 ```
 
 ## Database

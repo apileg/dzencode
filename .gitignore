@@ -39,6 +39,3 @@ next-env.d.ts
 
 # Image builds
 /docker/*.tar
-
-# HTTPS certificate
-/docker/https
