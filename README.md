@@ -172,7 +172,7 @@ Here's a diagram showing which tests cover which parts of the system:
 
 ![alt text](./docs/diagrams/tests.png)
 
-### Running
+### Running Unit Tests
 
 To run unit tests:
 
@@ -182,12 +182,38 @@ npm run test:unit
 
 ```
 
-To run api (integration) tests:
+### Running Integration Tests
+
+Integration tests try to cover as much code as possible. They run with
+real database and with production build of Next.js. This means that, in order
+to run these tests, you need to start MySQL and build the Next.js app
+
+> There's no single command that does this, since we normally only need to start the DB and build the app once
+
+1. If you use Docker, start DB with
 
 ```
+npm run db:start
+```
 
+Later, you can stop it with
+
+```
+npm run db:stop
+```
+
+If you don't use Docker, be sure to update `DATABASE_URL` in `/.env` file
+
+2. Build the Next.js app:
+
+```
+npm run build
+```
+
+3. Finally, run the API (integration) tests:
+
+```
 npm run test:api
-
 ```
 
 ## Database
@@ -287,6 +313,8 @@ Cookies:
     -   Does not enforce `HTTPS`
     -   Can be stolen if the site has `XSS` vulnerability
 
+## The choice
+
 I've chosen cookies because the website uses SSR. To visit protected
 SSR page, you need to somehow pass your JWT token. The only way to
 do that with `localStorage` is to first load some JS code that will
@@ -310,10 +338,13 @@ state
 Reasons why I have chosen zustand over redux with next-redux-wrapper are:
 
 -   Simplicity and Less Boilerplate: zustand offers a simpler and more concise API compared to Redux. With zustand, you don't need to define actions, reducers, or switch statements. It uses a function-based approach, allowing you to directly update the state using simple JavaScript functions
+
 -   Fewer Dependencies: zustand has minimal dependencies, often requiring only a few kilobytes of code. In contrast, Redux relies on additional middleware, such as Redux Thunk or Redux Saga, for handling asynchronous actions. zustand includes built-in support for async/await, making it easier to handle asynchronous logic without the need for extra dependencies
+
 -   Performance: zustand provides a lightweight state management solution with optimized reactivity. It leverages React's built-in useContext and useReducer hooks, resulting in efficient updates and rendering optimizations. Redux, on the other hand, introduces more overhead due to its centralized store and immutability requirements
+
 -   Server-Side Rendering (SSR) and Hydration: zustand seamlessly integrates with server-side rendering frameworks like Next.js, offering straightforward handling of the HYDRATE event. This ensures the proper synchronization of state between the server and the client, simplifying the SSR process. Redux, while compatible with SSR, requires additional configuration and middleware to handle hydration effectively
 
 ## Problematic part
 
-I attempt to pass data from the orders file to the redux store via getServerSideProps and encountered an issue with the next-redux-wrapper library. The purpose was to immediately load the order list during server-side rendering. However, the next-redux-wrapper failed to catch the HYDRATE event, which prevented the proper synchronization of the state between the server and the client. [See commit](https://github.com/apileg/dzencode/commit/7df20c57cebf3df66fe5ae0439ab936263872a5d)
+I attempt to pass data from the orders file to the redux store via getServerSideProps and encountered an issue with the next-redux-wrapper library. The purpose was to immediately load the order list during server-side rendering. However, the next-redux-wrapper failed to catch the HYDRATE event, which prevented the proper synchronization of the state between the server and the client. [See this commit](https://github.com/apileg/dzencode/commit/7df20c57cebf3df66fe5ae0439ab936263872a5d)
