@@ -1,6 +1,6 @@
 # Opening the website online
 
-This website is available at `https://194.61.52.204`. Note that I haven't
+This website is available at [`https://194.61.52.204`](https://194.61.52.204). Note that I haven't
 purchased an HTTPS certificate. Instead, I've used a self-signed one. Browser
 will warn you about potentially unsafe website, but the warning is caused
 by HTTPS. You can safely skip it
@@ -31,7 +31,7 @@ You can run the whole project using **Docker**:
 npm run up
 ```
 
-The app will be available at `http://localhost:3001`. To **turn off** the
+The app will be available at [`http://localhost:3001`](http://localhost:3001). To **turn off** the
 whole application use:
 
 ```
