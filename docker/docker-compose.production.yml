@@ -2,16 +2,24 @@ version: "3.3"
 
 services:
     db:
-        extends:
-            file: ./common-services.yml
-            service: db
+        image: mysql:8.0.33
+        restart: always
+        environment:
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            MYSQL_DATABASE: dzencode
         ports:
             - 3306
 
     app:
-        extends:
-            file: ./common-services.yml
-            service: app
+        build:
+            context: ..
+            dockerfile: ./docker/app.Dockerfile
+        restart: always
+        depends_on:
+            - db
+        environment:
+            PORT: 3001
+            DATABASE_URL: "mysql://root@db/dzencode"
         ports:
             - 3001
         env_file:
